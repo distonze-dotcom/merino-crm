@@ -11,6 +11,8 @@ export default function Dashboard() {
 
   const { kpis, lossReasons, repStats, sectorStats } = data;
   const maxMonto = repStats[0]?.monto || 1;
+  const totalLoss = lossReasons.reduce((s: number, x: any) => s + x.amount, 0) || 1;
+  const maxSector = sectorStats[0]?.amount || 1;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
@@ -56,7 +58,6 @@ export default function Dashboard() {
             <h3 style={{ color: C.text, fontSize: 13, fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.8, margin: "0 0 14px" }}>🔍 Por qué se pierden ventas</h3>
             {lossReasons.length === 0 && <div style={{ color: C.dim, fontSize: 13 }}>Sin datos</div>}
             {lossReasons.map((lr: any) => {
-              const totalLoss = lossReasons.reduce((s: number, x: any) => s + x.amount, 0);
               return (
                 <div key={lr.reason} style={{ marginBottom: 10 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
@@ -76,7 +77,6 @@ export default function Dashboard() {
             <h3 style={{ color: C.text, fontSize: 13, fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.8, margin: "0 0 14px" }}>🏗 Facturado por Rubro</h3>
             {sectorStats.length === 0 && <div style={{ color: C.dim, fontSize: 13 }}>Sin datos</div>}
             {sectorStats.map((ss: any) => {
-              const maxSector = sectorStats[0]?.amount || 1;
               return (
                 <div key={ss.sector} style={{ marginBottom: 10 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>

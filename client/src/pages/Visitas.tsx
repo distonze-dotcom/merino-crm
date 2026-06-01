@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useVisits, useCreateVisit } from "../hooks/useVisits";
 import { useCustomers } from "../hooks/useCustomers";
 import { useAuthStore } from "../store/auth.store";
+import { useEscapeKey } from "../hooks/useEscapeKey";
 import { SectionHeader } from "../components/design/SectionHeader";
 import { Badge } from "../components/design/Badge";
 import { Avatar } from "../components/design/Avatar";
@@ -13,6 +14,8 @@ export default function Visitas() {
   const createVisit = useCreateVisit();
   const { user } = useAuthStore();
   const [showForm, setShowForm] = useState(false);
+  const [error, setError] = useState("");
+  const [toast, setToast] = useState<string | null>(null);
   const [form, setForm] = useState({
     customerId: "",
     salesRepId: user?.id || "",
@@ -23,6 +26,10 @@ export default function Visitas() {
     nextVisitDate: "",
   });
 
+  useEscapeKey(() => setShowForm(false), showForm);
+
+  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3500); };
+
   if (isLoading) return <div style={{ color: C.muted, padding: 40, textAlign: "center" }}>Cargando visitas...</div>;
 
   const pendientesHoy = (visits as any[]).filter((v: any) =>
@@ -30,7 +37,9 @@ export default function Visitas() {
   );
 
   const handleSubmit = async () => {
-    if (!form.customerId || !form.result) return;
+    setError("");
+    if (!form.customerId) { setError("Seleccioná un cliente."); return; }
+    if (!form.result.trim()) { setError("Describí el resultado de la visita."); return; }
     try {
       await createVisit.mutateAsync({
         ...form,
@@ -40,8 +49,9 @@ export default function Visitas() {
       });
       setShowForm(false);
       setForm({ customerId: "", salesRepId: user?.id || "", date: new Date().toISOString().split("T")[0], wasReceived: true, result: "", saleAmount: 0, nextVisitDate: "" });
-    } catch (err) {
-      console.error(err);
+      showToast("✅ Visita registrada");
+    } catch (err: any) {
+      setError(err?.response?.data?.error || "Error al guardar la visita");
     }
   };
 
@@ -49,6 +59,9 @@ export default function Visitas() {
 
   return (
     <div>
+      {toast && (
+        <div role="status" style={{ position: "fixed", bottom: 24, right: 24, background: C.surface, border: `1px solid ${C.border}`, color: C.text, borderRadius: 3, padding: "12px 20px", fontWeight: 700, fontSize: 13, zIndex: 500, boxShadow: "0 6px 24px rgba(45,62,80,0.16)" }}>{toast}</div>
+      )}
       {showForm && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(45,62,80,0.45)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => setShowForm(false)}>
           <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 3, padding: 28, width: 480 }} onClick={e => e.stopPropagation()}>
@@ -85,8 +98,9 @@ export default function Visitas() {
                 <input type="date" value={form.nextVisitDate} onChange={e => setForm({ ...form, nextVisitDate: e.target.value })} style={inp} />
               </div>
             </div>
-            <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
-              <button onClick={handleSubmit} disabled={createVisit.isPending} style={{ flex: 1, background: C.accent, color: "#fff", border: "none", borderRadius: 3, padding: "10px", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+            {error && <div style={{ background: C.redDim, border: `1px solid ${C.red}33`, color: C.red, borderRadius: 3, padding: "9px 12px", fontSize: 13, marginTop: 14 }}>{error}</div>}
+            <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
+              <button onClick={handleSubmit} disabled={createVisit.isPending} style={{ flex: 1, background: createVisit.isPending ? C.accentDim : C.accent, color: createVisit.isPending ? C.accent : "#fff", border: "none", borderRadius: 3, padding: "10px", fontWeight: 700, fontSize: 13, cursor: createVisit.isPending ? "wait" : "pointer" }}>
                 {createVisit.isPending ? "Guardando..." : "Guardar visita"}
               </button>
               <button onClick={() => setShowForm(false)} style={{ background: C.card, color: C.muted, border: `1px solid ${C.border}`, borderRadius: 3, padding: "10px 16px", cursor: "pointer", fontSize: 13 }}>Cancelar</button>
@@ -107,6 +121,14 @@ export default function Visitas() {
               <Badge key={v.id} label={v.customer?.name} color={C.blue} bg={C.blueDim} />
             ))}
           </div>
+        </div>
+      )}
+
+      {(visits as any[]).length === 0 && (
+        <div style={{ textAlign: "center", padding: 50, color: C.muted, background: C.card, borderRadius: 3, border: `1px solid ${C.border}` }}>
+          <div style={{ fontSize: 32, marginBottom: 8 }}>🗺</div>
+          <div style={{ color: C.text, fontWeight: 700 }}>Sin visitas registradas</div>
+          <div style={{ fontSize: 13, marginTop: 4 }}>Registrá la primera con “+ Registrar Visita”.</div>
         </div>
       )}
 

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getAlerts } from "../api/alerts";
 import { SectionHeader } from "../components/design/SectionHeader";
@@ -10,6 +11,7 @@ import { useExportToPresea } from "../hooks/useQuotations";
 export default function Alertas() {
   const { data: alerts = [], isLoading } = useQuery({ queryKey: ["alerts"], queryFn: getAlerts });
   const exportMutation = useExportToPresea();
+  const navigate = useNavigate();
   const [toast, setToast] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -83,7 +85,10 @@ export default function Alertas() {
             ⬇ Exportar a Presea
           </button>
         ) : (
-          <button style={{ background: C.surface, color: C.muted, border: `1px solid ${C.border}`, borderRadius: 3, padding: "7px 14px", fontWeight: 600, fontSize: 12, cursor: "pointer" }}>
+          <button
+            onClick={() => a.customer?.id && navigate(`/clientes?cliente=${a.customer.id}`)}
+            disabled={!a.customer?.id}
+            style={{ background: C.surface, color: C.muted, border: `1px solid ${C.border}`, borderRadius: 3, padding: "7px 14px", fontWeight: 600, fontSize: 12, cursor: a.customer?.id ? "pointer" : "not-allowed" }}>
             Ver cliente
           </button>
         )}
