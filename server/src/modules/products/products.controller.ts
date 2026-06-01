@@ -55,7 +55,7 @@ export async function importFromExcel(req: Request, res: Response, next: NextFun
     let skippedEmpty = 0;
 
     for (const raw of rawRows) {
-      const code = String(raw["CODIGO_PRO"] ?? "").trim();
+      const code = String(raw["CODIGO"] ?? "").trim();
       const name = String(raw["DETALLE"] ?? "").trim();
 
       if (!code || !name) {
