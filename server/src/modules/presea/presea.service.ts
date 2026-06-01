@@ -19,7 +19,7 @@ export async function exportToPresea(quotationId: string, actorId: string) {
     throw new Error(`Este presupuesto ya fue exportado el ${q.exportedAt.toISOString()}`);
   }
 
-  const rows = q.items.map((item) => ({
+  const rows = q.items.map((item: { product: { code: string; name: string; unit: string }; quantity: number; unitPrice: number; subtotal: number }) => ({
     Código: item.product.code,
     Producto: item.product.name,
     Unidad: item.product.unit,
@@ -38,7 +38,7 @@ export async function exportToPresea(quotationId: string, actorId: string) {
     ["Sector", q.customer.sector],
     ["Comercial", q.salesRep.name],
     ["Fecha", q.issueDate.toLocaleDateString("es-AR")],
-    ["Total", q.items.reduce((s, i) => s + i.subtotal, 0)],
+    ["Total", q.items.reduce((s: number, i: { subtotal: number }) => s + i.subtotal, 0)],
   ];
   const wsInfo = XLSX.utils.aoa_to_sheet(infoData);
   XLSX.utils.book_append_sheet(wb, wsInfo, "Encabezado");

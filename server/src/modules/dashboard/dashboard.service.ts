@@ -15,11 +15,14 @@ export async function getDashboard(userId: string, role: string) {
     prisma.user.findMany({ where: { active: true, role: "SALES" }, select: { id: true, name: true, avatar: true, color: true } }),
   ]);
 
-  const totalPresupuestado = allQuotations.reduce((s, q) => s + q.items.reduce((ss, i) => ss + i.subtotal, 0), 0);
+  const sumItems = (qs: typeof allQuotations) =>
+    qs.reduce((s, q) => s + q.items.reduce((ss: number, i: { subtotal: number }) => ss + i.subtotal, 0), 0);
+
   const facturadas = allQuotations.filter((q) => q.status === "INVOICED");
-  const perdidas = allQuotations.filter((q) => q.status === "REJECTED");
-  const totalFacturado = facturadas.reduce((s, q) => s + q.items.reduce((ss, i) => ss + i.subtotal, 0), 0);
-  const totalPerdido = perdidas.reduce((s, q) => s + q.items.reduce((ss, i) => ss + i.subtotal, 0), 0);
+  const perdidas   = allQuotations.filter((q) => q.status === "REJECTED");
+  const totalPresupuestado = sumItems(allQuotations);
+  const totalFacturado     = sumItems(facturadas);
+  const totalPerdido       = sumItems(perdidas);
   const conversion = allQuotations.length
     ? Math.round((facturadas.length / allQuotations.length) * 100)
     : 0;
@@ -36,7 +39,7 @@ export async function getDashboard(userId: string, role: string) {
   const repStats = salesReps.map((rep) => {
     const repQ = allQuotations.filter((q) => q.salesRepId === rep.id);
     const repFact = repQ.filter((q) => q.status === "INVOICED");
-    const monto = repFact.reduce((s, q) => s + q.items.reduce((ss, i) => ss + i.subtotal, 0), 0);
+    const monto = sumItems(repFact);
     return {
       ...rep,
       presupuestos: repQ.length,
@@ -44,14 +47,14 @@ export async function getDashboard(userId: string, role: string) {
       monto,
       conversion: repQ.length ? Math.round((repFact.length / repQ.length) * 100) : 0,
     };
-  }).sort((a, b) => b.monto - a.monto);
+  }).sort((a: { monto: number }, b: { monto: number }) => b.monto - a.monto);
 
   // Sector stats from invoiced quotations
   const sectorStats: Record<string, number> = {};
   for (const q of facturadas) {
     const customer = await prisma.customer.findUnique({ where: { id: q.customerId }, select: { sector: true } });
     if (customer) {
-      const amount = q.items.reduce((s, i) => s + i.subtotal, 0);
+      const amount = q.items.reduce((s: number, i: { subtotal: number }) => s + i.subtotal, 0);
       sectorStats[customer.sector] = (sectorStats[customer.sector] || 0) + amount;
     }
   }

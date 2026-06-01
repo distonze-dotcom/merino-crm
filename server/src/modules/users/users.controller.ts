@@ -31,7 +31,7 @@ export async function list(req: Request, res: Response, next: NextFunction) {
 export async function create(req: Request, res: Response, next: NextFunction) {
   try {
     const data = createSchema.parse(req.body);
-    res.status(201).json(await createUser(data));
+    res.status(201).json(await createUser({ ...data, role: data.role ?? "SALES" }));
   } catch (err) {
     next(err);
   }
