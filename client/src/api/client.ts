@@ -1,8 +1,14 @@
 import axios from "axios";
 import { useAuthStore } from "../store/auth.store";
 
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  (typeof window !== "undefined" && window.location.hostname !== "localhost"
+    ? "https://merino-comerciales.vercel.app"
+    : "http://localhost:3000");
+
 export const api = axios.create({
-  baseURL: `${import.meta.env.VITE_API_URL ?? "http://localhost:3000"}/api`,
+  baseURL: `${API_URL}/api`,
   headers: { "Content-Type": "application/json" },
 });
 

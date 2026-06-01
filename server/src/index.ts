@@ -15,10 +15,25 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(",")
+  ? process.env.ALLOWED_ORIGINS.split(",").map(o => o.trim())
   : ["http://localhost:5173", "http://localhost:5174"];
 
-app.use(cors({ origin: allowedOrigins, credentials: true }));
+// Always allow the known production client
+const productionOrigins = [
+  "https://merino-crm-client.vercel.app",
+  "https://merino-comerciales.vercel.app",
+];
+const allOrigins = [...new Set([...allowedOrigins, ...productionOrigins])];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    if (allOrigins.includes(origin)) return callback(null, true);
+    return callback(null, false);
+  },
+  credentials: true,
+}));
 app.use(express.json());
 
 // Routes
