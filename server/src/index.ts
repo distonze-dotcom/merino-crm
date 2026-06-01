@@ -14,26 +14,24 @@ import preseaRoutes from "./modules/presea/presea.routes";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const allowedOrigins = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(",").map(o => o.trim())
-  : ["http://localhost:5173", "http://localhost:5174"];
-
-// Always allow the known production client
-const productionOrigins = [
-  "https://merino-crm-client.vercel.app",
-  "https://merino-comerciales.vercel.app",
-];
-const allOrigins = [...new Set([...allowedOrigins, ...productionOrigins])];
-
-app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, curl, etc.)
-    if (!origin) return callback(null, true);
-    if (allOrigins.includes(origin)) return callback(null, true);
-    return callback(null, false);
-  },
-  credentials: true,
-}));
+// CORS — allow all vercel.app subdomains + localhost
+app.use((req, res, next) => {
+  const origin = req.headers.origin || "";
+  const allowed =
+    origin.endsWith(".vercel.app") ||
+    origin.startsWith("http://localhost");
+  if (allowed) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
+  }
+  if (req.method === "OPTIONS") {
+    res.sendStatus(204);
+    return;
+  }
+  next();
+});
 app.use(express.json());
 
 // Routes
