@@ -1,5 +1,4 @@
-import express from "express";
-import cors from "cors";
+import express, { Request, Response, NextFunction } from "express";
 import { errorHandler } from "./middleware/errorHandler";
 import authRoutes from "./modules/auth/auth.routes";
 import usersRoutes from "./modules/users/users.routes";
@@ -12,43 +11,58 @@ import dashboardRoutes from "./modules/dashboard/dashboard.routes";
 import preseaRoutes from "./modules/presea/presea.routes";
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-// CORS — allow all vercel.app subdomains + localhost
-app.use((req, res, next) => {
-  const origin = req.headers.origin || "";
-  const allowed =
+// ── CORS manual — must be first, before any route ──────────────────────────
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const origin = req.headers.origin ?? "";
+  if (
     origin.endsWith(".vercel.app") ||
-    origin.startsWith("http://localhost");
-  if (allowed) {
+    origin.startsWith("http://localhost")
+  ) {
     res.setHeader("Access-Control-Allow-Origin", origin);
     res.setHeader("Access-Control-Allow-Credentials", "true");
-    res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
+    res.setHeader(
+      "Access-Control-Allow-Methods",
+      "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+    );
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "Content-Type,Authorization"
+    );
   }
   if (req.method === "OPTIONS") {
-    res.sendStatus(204);
+    res.status(204).end();
     return;
   }
   next();
 });
+
 app.use(express.json());
 
-// Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/users", usersRoutes);
-app.use("/api/customers", customersRoutes);
-app.use("/api/visits", visitsRoutes);
-app.use("/api/quotations", quotationsRoutes);
-app.use("/api/products", productsRoutes);
-app.use("/api/alerts", alertsRoutes);
-app.use("/api/dashboard", dashboardRoutes);
-app.use("/api/presea", preseaRoutes);
+// ── Routes ──────────────────────────────────────────────────────────────────
+app.use("/api/auth",        authRoutes);
+app.use("/api/users",       usersRoutes);
+app.use("/api/customers",   customersRoutes);
+app.use("/api/visits",      visitsRoutes);
+app.use("/api/quotations",  quotationsRoutes);
+app.use("/api/products",    productsRoutes);
+app.use("/api/alerts",      alertsRoutes);
+app.use("/api/dashboard",   dashboardRoutes);
+app.use("/api/presea",      preseaRoutes);
 
-app.get("/api/health", (_req, res) => res.json({ status: "ok", timestamp: new Date().toISOString() }));
+app.get("/api/health", (_req, res) =>
+  res.json({ status: "ok", ts: new Date().toISOString() })
+);
 
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`🎨 Merino CRM Server running on http://localhost:${PORT}`);
-});
+// ── Local dev server ─────────────────────────────────────────────────────────
+// Vercel uses the exported `app` directly — do NOT call listen() there.
+if (process.env.NODE_ENV !== "production") {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () =>
+    console.log(`🎨 Merino CRM Server → http://localhost:${PORT}`)
+  );
+}
+
+export default app;
