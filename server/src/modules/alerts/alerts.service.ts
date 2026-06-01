@@ -94,7 +94,7 @@ export async function getAlerts(userId: string, role: string) {
   }
 
   for (const q of readyQuotations) {
-    const total = q.items.reduce((sum, item) => sum + item.subtotal, 0);
+    const total = q.items.reduce((sum: number, item: { subtotal: number }) => sum + item.subtotal, 0);
     alerts.push({
       id: `listo_facturar_${q.id}`,
       type: "listo_facturar",
