@@ -7,11 +7,12 @@ import { getAlerts } from "../../api/alerts";
 import { getQuotations } from "../../api/quotations";
 
 const TABS = [
-  { to: "/alertas",       icon: "🔔", label: "Alertas",       key: "alertas" },
-  { to: "/clientes",      icon: "👥", label: "Clientes",      key: "clientes" },
-  { to: "/presupuestos",  icon: "📋", label: "Presupuestos",  key: "presupuestos" },
-  { to: "/visitas",       icon: "🗺",  label: "Visitas",       key: "visitas" },
-  { to: "/dashboard",     icon: "📊", label: "Análisis",      key: "dashboard" },
+  { to: "/alertas",       icon: "🔔", label: "Alertas",       key: "alertas",       adminOnly: false },
+  { to: "/clientes",      icon: "👥", label: "Clientes",      key: "clientes",      adminOnly: false },
+  { to: "/presupuestos",  icon: "📋", label: "Presupuestos",  key: "presupuestos",  adminOnly: false },
+  { to: "/visitas",       icon: "🗺",  label: "Visitas",       key: "visitas",       adminOnly: false },
+  { to: "/dashboard",     icon: "📊", label: "Análisis",      key: "dashboard",     adminOnly: false },
+  { to: "/configuracion", icon: "⚙",  label: "Configuración", key: "configuracion", adminOnly: true },
 ];
 
 export function NavBar() {
@@ -62,7 +63,7 @@ export function NavBar() {
 
       {/* Tabs */}
       <nav style={{ display: "flex", gap: 0, flex: 1 }}>
-        {TABS.map(t => {
+        {TABS.filter(t => !t.adminOnly || user?.role === "ADMIN").map(t => {
           const b = badge(t.key);
           return (
             <NavLink key={t.to} to={t.to} style={({ isActive }) => ({

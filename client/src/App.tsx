@@ -6,6 +6,7 @@ import Clientes from "./pages/Clientes";
 import Presupuestos from "./pages/Presupuestos";
 import Visitas from "./pages/Visitas";
 import Dashboard from "./pages/Dashboard";
+import Configuracion from "./pages/Configuracion";
 
 export default function App() {
   return (
@@ -30,6 +31,10 @@ export default function App() {
       <Route
         path="/dashboard"
         element={<AppShell><Dashboard /></AppShell>}
+      />
+      <Route
+        path="/configuracion"
+        element={<AppShell><Configuracion /></AppShell>}
       />
       <Route path="*" element={<Navigate to="/alertas" replace />} />
     </Routes>
