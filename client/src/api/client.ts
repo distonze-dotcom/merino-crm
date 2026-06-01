@@ -1,11 +1,13 @@
 import axios from "axios";
 import { useAuthStore } from "../store/auth.store";
 
-const IS_LOCAL = typeof window !== "undefined" && window.location.hostname === "localhost";
-const API_URL = IS_LOCAL ? "http://localhost:3000" : "https://merino-comerciales.vercel.app";
+// Same domain in production (Vercel), localhost:3000 in dev
+const API_BASE = window.location.hostname === "localhost"
+  ? "http://localhost:3000/api"
+  : "/api";
 
 export const api = axios.create({
-  baseURL: `${API_URL}/api`,
+  baseURL: API_BASE,
   headers: { "Content-Type": "application/json" },
 });
 

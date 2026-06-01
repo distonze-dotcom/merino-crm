@@ -12,28 +12,16 @@ import preseaRoutes from "./modules/presea/presea.routes";
 
 const app = express();
 
-// ── CORS manual — must be first, before any route ──────────────────────────
+// CORS — only needed for local dev (in production, same domain via Vercel)
 app.use((req: Request, res: Response, next: NextFunction) => {
   const origin = req.headers.origin ?? "";
-  if (
-    origin.endsWith(".vercel.app") ||
-    origin.startsWith("http://localhost")
-  ) {
+  if (origin.startsWith("http://localhost")) {
     res.setHeader("Access-Control-Allow-Origin", origin);
     res.setHeader("Access-Control-Allow-Credentials", "true");
-    res.setHeader(
-      "Access-Control-Allow-Methods",
-      "GET,POST,PUT,PATCH,DELETE,OPTIONS"
-    );
-    res.setHeader(
-      "Access-Control-Allow-Headers",
-      "Content-Type,Authorization"
-    );
+    res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
   }
-  if (req.method === "OPTIONS") {
-    res.status(204).end();
-    return;
-  }
+  if (req.method === "OPTIONS") { res.status(204).end(); return; }
   next();
 });
 
