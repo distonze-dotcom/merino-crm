@@ -1,0 +1,152 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  avatar       String
+  color        String
+  role         String   @default("SALES")
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  customers      Customer[]
+  visits         Visit[]
+  quotations     Quotation[]
+  auditLogs      AuditLog[]
+  notifications  Notification[]
+}
+
+model Customer {
+  id           String   @id @default(cuid())
+  name         String
+  sector       String
+  phone        String?
+  email        String?
+  address      String?
+  notes        String?
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  assignedToId String
+  assignedTo   User     @relation(fields: [assignedToId], references: [id])
+
+  visits       Visit[]
+  quotations   Quotation[]
+  auditLogs    AuditLog[]
+}
+
+model Visit {
+  id            String    @id @default(cuid())
+  date          DateTime
+  wasReceived   Boolean   @default(true)
+  result        String
+  saleAmount    Float     @default(0)
+  nextVisitDate DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  customerId  String
+  customer    Customer @relation(fields: [customerId], references: [id])
+  salesRepId  String
+  salesRep    User     @relation(fields: [salesRepId], references: [id])
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  name        String
+  description String?
+  unit        String   @default("un")
+  price       Float
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  quotationItems QuotationItem[]
+}
+
+model Quotation {
+  id         String   @id @default(cuid())
+  number     String   @unique
+  status     String   @default("DRAFT")
+  issueDate  DateTime @default(now())
+  validUntil DateTime?
+  notes      String?
+  lossReason String?
+  exportedAt DateTime?
+  erpRef     String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  customerId String
+  customer   Customer  @relation(fields: [customerId], references: [id])
+  salesRepId String
+  salesRep   User      @relation(fields: [salesRepId], references: [id])
+
+  items      QuotationItem[]
+  auditLogs  AuditLog[]
+  exportLogs PreseaExportLog[]
+}
+
+model QuotationItem {
+  id        String @id @default(cuid())
+  quantity  Float
+  unitPrice Float
+  subtotal  Float
+
+  quotationId String
+  quotation   Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product   @relation(fields: [productId], references: [id])
+}
+
+model PreseaExportLog {
+  id          String   @id @default(cuid())
+  quotationId String
+  quotation   Quotation @relation(fields: [quotationId], references: [id])
+  exportedBy  String
+  exportedAt  DateTime @default(now())
+  status      String   @default("success")
+  errorMsg    String?
+  fileName    String?
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  type      String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  entity    String
+  entityId  String
+  action    String
+  oldValue  String?
+  newValue  String?
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  customerId  String?
+  customer    Customer?  @relation(fields: [customerId], references: [id])
+  quotationId String?
+  quotation   Quotation? @relation(fields: [quotationId], references: [id])
+}

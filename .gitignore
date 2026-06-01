@@ -1,0 +1,25 @@
+﻿# Dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Database (local only)
+server/prisma/dev.db
+server/prisma/dev.db-journal
+
+# Build outputs
+client/dist/
+server/dist/
+
+# Environment files
+.env
+.env.local
+server/.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
