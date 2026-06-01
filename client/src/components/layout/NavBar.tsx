@@ -1,10 +1,12 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/auth.store";
 import { Avatar } from "../design/Avatar";
-import { C } from "../design/tokens";
+import { C, R } from "../design/tokens";
 import { useQuery } from "@tanstack/react-query";
 import { getAlerts } from "../../api/alerts";
 import { getQuotations } from "../../api/quotations";
+
+export const SIDEBAR_W = 232;
 
 const TABS = [
   { to: "/alertas",       icon: "🔔", label: "Alertas",       key: "alertas",       adminOnly: false },
@@ -37,23 +39,24 @@ export function NavBar() {
   };
 
   return (
-    <div style={{
-      background: C.surface,
-      borderBottom: `1px solid ${C.border}`,
-      padding: "0 28px",
-      display: "flex",
-      alignItems: "center",
-      gap: 32,
-      position: "sticky",
+    <aside style={{
+      position: "fixed",
       top: 0,
+      left: 0,
+      bottom: 0,
+      width: SIDEBAR_W,
+      background: C.surface,
+      borderRight: `1px solid ${C.border}`,
+      display: "flex",
+      flexDirection: "column",
       zIndex: 100,
     }}>
       {/* Logo */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "13px 0", minWidth: 180 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "18px 18px", borderBottom: `1px solid ${C.border}` }}>
         <div style={{
-          width: 34, height: 34, borderRadius: 9,
+          width: 36, height: 36, borderRadius: R,
           background: `linear-gradient(135deg,${C.accent},#ff7043)`,
-          display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18,
+          display: "flex", alignItems: "center", justifyContent: "center", fontSize: 19,
         }}>🎨</div>
         <div>
           <div style={{ fontWeight: 800, fontSize: 14, color: C.text, letterSpacing: -0.3 }}>Andres Merino</div>
@@ -62,28 +65,27 @@ export function NavBar() {
       </div>
 
       {/* Tabs */}
-      <nav style={{ display: "flex", gap: 0, flex: 1 }}>
+      <nav style={{ display: "flex", flexDirection: "column", gap: 2, padding: "12px 10px", flex: 1 }}>
         {TABS.filter(t => !t.adminOnly || user?.role === "ADMIN").map(t => {
           const b = badge(t.key);
           return (
             <NavLink key={t.to} to={t.to} style={({ isActive }) => ({
-              background: "transparent",
-              color: isActive ? C.accent : C.muted,
-              border: "none",
-              borderBottom: `2px solid ${isActive ? C.accent : "transparent"}`,
+              background: isActive ? C.accentDim : "transparent",
+              color: isActive ? C.accent : C.text,
+              borderRadius: R,
               cursor: "pointer",
-              padding: "17px 18px",
-              fontSize: 13,
-              fontWeight: 600,
+              padding: "10px 12px",
+              fontSize: 13.5,
+              fontWeight: isActive ? 700 : 500,
               textDecoration: "none",
               display: "flex",
               alignItems: "center",
-              gap: 6,
-              position: "relative",
+              gap: 10,
             })}>
-              <span>{t.icon}</span> {t.label}
+              <span style={{ fontSize: 16, width: 20, textAlign: "center" }}>{t.icon}</span>
+              <span style={{ flex: 1 }}>{t.label}</span>
               {b && (
-                <span style={{ background: C.red, color: "#fff", borderRadius: 10, padding: "1px 6px", fontSize: 10, fontWeight: 800, minWidth: 16, textAlign: "center" }}>
+                <span style={{ background: C.red, color: "#fff", borderRadius: 10, padding: "1px 7px", fontSize: 10, fontWeight: 800, minWidth: 18, textAlign: "center" }}>
                   {b}
                 </span>
               )}
@@ -94,24 +96,24 @@ export function NavBar() {
 
       {/* User */}
       {user && (
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <Avatar avatar={user.avatar} color={user.color} size={28} />
-          <div>
-            <div style={{ color: C.text, fontSize: 12, fontWeight: 700 }}>{user.name.split(" ")[0]}</div>
+        <div style={{ borderTop: `1px solid ${C.border}`, padding: "12px 14px", display: "flex", alignItems: "center", gap: 10 }}>
+          <Avatar avatar={user.avatar} color={user.color} size={32} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ color: C.text, fontSize: 12.5, fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{user.name}</div>
             <div style={{ color: C.muted, fontSize: 10, textTransform: "uppercase", letterSpacing: 0.6 }}>{user.role}</div>
           </div>
-          <button onClick={handleLogout} style={{
+          <button onClick={handleLogout} title="Salir" style={{
             background: "transparent",
             border: `1px solid ${C.border}`,
             color: C.muted,
-            borderRadius: 6,
-            padding: "4px 10px",
+            borderRadius: R,
+            padding: "5px 10px",
             fontSize: 11,
+            fontWeight: 600,
             cursor: "pointer",
-            marginLeft: 4,
           }}>Salir</button>
         </div>
       )}
-    </div>
+    </aside>
   );
 }

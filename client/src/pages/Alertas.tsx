@@ -53,7 +53,7 @@ export default function Alertas() {
         gap: 14,
         padding: "13px 16px",
         background: C.card,
-        borderRadius: 10,
+        borderRadius: 3,
         border: `1px solid ${a.urgency === "alta" ? C.redDim : C.border}`,
         borderLeft: `4px solid ${a.urgency === "alta" ? C.red : C.yellow}`,
       }}>
@@ -79,11 +79,11 @@ export default function Alertas() {
           <button
             onClick={() => handleExport(a.quotation.id)}
             disabled={exportMutation.isPending}
-            style={{ background: C.purple, color: "#fff", border: "none", borderRadius: 8, padding: "7px 14px", fontWeight: 700, fontSize: 12, cursor: "pointer", whiteSpace: "nowrap" }}>
+            style={{ background: C.purple, color: "#fff", border: "none", borderRadius: 3, padding: "7px 14px", fontWeight: 700, fontSize: 12, cursor: "pointer", whiteSpace: "nowrap" }}>
             ⬇ Exportar a Presea
           </button>
         ) : (
-          <button style={{ background: C.surface, color: C.muted, border: `1px solid ${C.border}`, borderRadius: 8, padding: "7px 14px", fontWeight: 600, fontSize: 12, cursor: "pointer" }}>
+          <button style={{ background: C.surface, color: C.muted, border: `1px solid ${C.border}`, borderRadius: 3, padding: "7px 14px", fontWeight: 600, fontSize: 12, cursor: "pointer" }}>
             Ver cliente
           </button>
         )}
@@ -94,7 +94,7 @@ export default function Alertas() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
       {toast && (
-        <div style={{ position: "fixed", bottom: 24, right: 24, background: C.greenDim, border: `1px solid ${C.green}`, color: C.green, borderRadius: 10, padding: "12px 20px", fontWeight: 700, fontSize: 13, zIndex: 500 }}>
+        <div style={{ position: "fixed", bottom: 24, right: 24, background: C.greenDim, border: `1px solid ${C.green}`, color: C.green, borderRadius: 3, padding: "12px 20px", fontWeight: 700, fontSize: 13, zIndex: 500 }}>
           {toast}
         </div>
       )}

@@ -1,25 +1,31 @@
+// HubSpot-inspired light theme — clean, subtle borders, soft shadows
 export const C = {
-  bg:        "#0d0d0d",
-  surface:   "#161616",
-  card:      "#1e1e1e",
-  cardHover: "#242424",
-  border:    "#2a2a2a",
+  bg:        "#f5f8fa",
+  surface:   "#ffffff",
+  card:      "#ffffff",
+  cardHover: "#f5f8fa",
+  border:    "#dfe3eb",
   accent:    "#e8541a",
-  accentDim: "#7a2d0e",
-  green:     "#22c55e",
-  greenDim:  "#052e16",
-  red:       "#ef4444",
-  redDim:    "#2d0a0a",
-  yellow:    "#f59e0b",
-  yellowDim: "#422006",
-  blue:      "#3b82f6",
-  blueDim:   "#0c1a30",
-  purple:    "#a78bfa",
-  purpleDim: "#1e1040",
-  text:      "#f0ede8",
-  muted:     "#7a7570",
-  dim:       "#444",
+  accentDim: "#fdeee8",
+  green:     "#00a38d",
+  greenDim:  "#e3f5f1",
+  red:       "#d6492f",
+  redDim:    "#fbe9e6",
+  yellow:    "#c47d12",
+  yellowDim: "#fdf3e1",
+  blue:      "#2563eb",
+  blueDim:   "#e7effd",
+  purple:    "#6b4eff",
+  purpleDim: "#ece8ff",
+  text:      "#33475b",
+  muted:     "#7c98b6",
+  dim:       "#afbdca",
 } as const;
+
+export const R = 3;
+export const SHADOW = "0 1px 2px rgba(45,62,80,0.08)";
+export const SHADOW_LG = "0 6px 24px rgba(45,62,80,0.16)";
+export const FONT = "'Inter','Segoe UI',system-ui,-apple-system,sans-serif";
 
 export const QUOTATION_STATUS_LABEL: Record<string, string> = {
   DRAFT:                "Borrador",

@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuthStore } from "../../store/auth.store";
-import { NavBar } from "./NavBar";
+import { NavBar, SIDEBAR_W } from "./NavBar";
 import { C } from "../design/tokens";
 
 interface AppShellProps {
@@ -15,9 +15,11 @@ export function AppShell({ children }: AppShellProps) {
   return (
     <div style={{ minHeight: "100vh", background: C.bg, color: C.text }}>
       <NavBar />
-      <div style={{ maxWidth: 1140, margin: "0 auto", padding: "28px 22px" }}>
-        {children}
-      </div>
+      <main style={{ marginLeft: SIDEBAR_W, minHeight: "100vh" }}>
+        <div style={{ maxWidth: 1180, margin: "0 auto", padding: "32px 32px" }}>
+          {children}
+        </div>
+      </main>
     </div>
   );
 }

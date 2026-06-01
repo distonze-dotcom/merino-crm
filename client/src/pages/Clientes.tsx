@@ -26,11 +26,11 @@ function FichaCliente({ customerId, onClose }: { customerId: string; onClose: ()
   const lastPurchase = c.quotations.find((q: any) => q.status === "INVOICED");
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "#000a", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={onClose}>
-      <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 16, width: 720, maxHeight: "85vh", overflow: "auto", padding: 28 }} onClick={e => e.stopPropagation()}>
+    <div style={{ position: "fixed", inset: 0, background: "rgba(45,62,80,0.45)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={onClose}>
+      <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 3, width: 720, maxHeight: "85vh", overflow: "auto", padding: 28 }} onClick={e => e.stopPropagation()}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
           <div>
-            <h2 style={{ color: C.text, fontFamily: "Georgia, serif", fontSize: 20, margin: 0 }}>{c.name}</h2>
+            <h2 style={{ color: C.text, fontFamily: "'Inter','Segoe UI',system-ui,sans-serif", fontSize: 20, margin: 0 }}>{c.name}</h2>
             <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
               <Badge label={c.sector} color={C.yellow} bg={C.yellowDim} />
               <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
@@ -39,7 +39,7 @@ function FichaCliente({ customerId, onClose }: { customerId: string; onClose: ()
               </div>
             </div>
           </div>
-          <button onClick={onClose} style={{ background: C.card, border: `1px solid ${C.border}`, color: C.muted, borderRadius: 8, padding: "6px 12px", cursor: "pointer", fontSize: 13 }}>✕ Cerrar</button>
+          <button onClick={onClose} style={{ background: C.card, border: `1px solid ${C.border}`, color: C.muted, borderRadius: 3, padding: "6px 12px", cursor: "pointer", fontSize: 13 }}>✕ Cerrar</button>
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 10, marginBottom: 22 }}>
@@ -51,13 +51,13 @@ function FichaCliente({ customerId, onClose }: { customerId: string; onClose: ()
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 22 }}>
           {lastPurchase && (
-            <div style={{ background: C.card, borderRadius: 10, padding: "12px 14px", border: `1px solid ${C.border}` }}>
+            <div style={{ background: C.card, borderRadius: 3, padding: "12px 14px", border: `1px solid ${C.border}` }}>
               <div style={{ color: C.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 4 }}>Última compra</div>
               <div style={{ color: C.green, fontWeight: 700, fontSize: 15 }}>{fmtDate(lastPurchase.updatedAt)}</div>
             </div>
           )}
           {lastVisit && (
-            <div style={{ background: C.card, borderRadius: 10, padding: "12px 14px", border: `1px solid ${C.border}` }}>
+            <div style={{ background: C.card, borderRadius: 3, padding: "12px 14px", border: `1px solid ${C.border}` }}>
               <div style={{ color: C.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 4 }}>Última visita</div>
               <div style={{ color: daysSince(lastVisit.date) > 20 ? C.red : C.green, fontWeight: 700, fontSize: 15 }}>{fmtDate(lastVisit.date)}</div>
               <div style={{ color: C.dim, fontSize: 11 }}>hace {daysSince(lastVisit.date)} días</div>
@@ -71,7 +71,7 @@ function FichaCliente({ customerId, onClose }: { customerId: string; onClose: ()
             {c.quotations.map((q: any) => {
               const total = q.items.reduce((s: number, i: any) => s + i.subtotal, 0);
               return (
-                <div key={q.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "9px 12px", background: C.bg, borderRadius: 8, border: `1px solid ${C.border}` }}>
+                <div key={q.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "9px 12px", background: C.bg, borderRadius: 3, border: `1px solid ${C.border}` }}>
                   <span style={{ color: C.muted, fontSize: 11, fontFamily: "monospace", minWidth: 60 }}>{q.number}</span>
                   <span style={{ color: C.text, fontSize: 12, flex: 1 }}>{q.items[0]?.product?.name || "—"}{q.items.length > 1 ? ` +${q.items.length - 1}` : ""}</span>
                   <span style={{ color: C.muted, fontSize: 11 }}>{fmtDate(q.issueDate)}</span>
@@ -89,7 +89,7 @@ function FichaCliente({ customerId, onClose }: { customerId: string; onClose: ()
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             {c.visits.length === 0 && <div style={{ color: C.dim, fontSize: 13 }}>Sin visitas registradas</div>}
             {c.visits.map((v: any) => (
-              <div key={v.id} style={{ padding: "9px 12px", background: C.bg, borderRadius: 8, border: `1px solid ${C.border}`, borderLeft: `3px solid ${v.saleAmount > 0 ? C.green : v.wasReceived ? C.yellow : C.red}` }}>
+              <div key={v.id} style={{ padding: "9px 12px", background: C.bg, borderRadius: 3, border: `1px solid ${C.border}`, borderLeft: `3px solid ${v.saleAmount > 0 ? C.green : v.wasReceived ? C.yellow : C.red}` }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
                   <span style={{ color: C.muted, fontSize: 11 }}>{fmtDate(v.date)}</span>
                   {v.saleAmount > 0 && <span style={{ color: C.green, fontWeight: 700, fontSize: 12 }}>{fmt(v.saleAmount)}</span>}
@@ -131,7 +131,7 @@ export default function Clientes() {
     background: active ? C.accent : C.card,
     color: active ? "#fff" : C.muted,
     border: `1px solid ${active ? C.accent : C.border}`,
-    borderRadius: 20,
+    borderRadius: 3,
     padding: "5px 14px",
     cursor: "pointer",
     fontSize: 12,
@@ -146,7 +146,7 @@ export default function Clientes() {
         title="Cartera de Clientes"
         sub={`${filtrados.length} clientes`}
         action={
-          <button style={{ background: C.accent, color: "#fff", border: "none", borderRadius: 8, padding: "8px 18px", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>+ Nuevo Cliente</button>
+          <button style={{ background: C.accent, color: "#fff", border: "none", borderRadius: 3, padding: "8px 18px", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>+ Nuevo Cliente</button>
         }
       />
 
@@ -154,13 +154,13 @@ export default function Clientes() {
         {["Todos", "Activo", "En riesgo", "Inactivo"].map(e => (
           <button key={e} onClick={() => setFiltroEstado(e)} style={btnStyle(filtroEstado === e)}>{e}</button>
         ))}
-        <select value={filtroRubro} onChange={e => setFiltroRubro(e.target.value)} style={{ background: C.card, color: C.text, border: `1px solid ${C.border}`, borderRadius: 8, padding: "5px 12px", fontSize: 12, marginLeft: 8 }}>
+        <select value={filtroRubro} onChange={e => setFiltroRubro(e.target.value)} style={{ background: C.card, color: C.text, border: `1px solid ${C.border}`, borderRadius: 3, padding: "5px 12px", fontSize: 12, marginLeft: 8 }}>
           {rubros.map(r => <option key={r}>{r}</option>)}
         </select>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 140px 110px 80px 80px", gap: 8, padding: "8px 14px", background: C.surface, borderRadius: 8 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 140px 110px 80px 80px", gap: 8, padding: "8px 14px", background: C.surface, borderRadius: 3 }}>
           {["Cliente / Rubro", "Comercial", "Facturado Total", "Estado", ""].map(h => (
             <span key={h} style={{ color: C.muted, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.6 }}>{h}</span>
           ))}
@@ -179,7 +179,7 @@ export default function Clientes() {
             .reduce((s: number, q: any) => s + (q.items || []).reduce((ss: number, i: any) => ss + i.subtotal, 0), 0);
 
           return (
-            <div key={c.id} onClick={() => setFichaId(c.id)} style={{ display: "grid", gridTemplateColumns: "1fr 140px 110px 80px 80px", gap: 8, padding: "12px 14px", background: C.card, borderRadius: 8, border: `1px solid ${C.border}`, cursor: "pointer", alignItems: "center" }}>
+            <div key={c.id} onClick={() => setFichaId(c.id)} style={{ display: "grid", gridTemplateColumns: "1fr 140px 110px 80px 80px", gap: 8, padding: "12px 14px", background: C.card, borderRadius: 3, border: `1px solid ${C.border}`, cursor: "pointer", alignItems: "center" }}>
               <div>
                 <div style={{ color: C.text, fontWeight: 700, fontSize: 13 }}>{c.name}</div>
                 <div style={{ color: C.dim, fontSize: 11, marginTop: 2 }}>{c.sector}</div>
