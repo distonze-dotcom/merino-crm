@@ -54,7 +54,7 @@ export async function get(req: Request, res: Response, next: NextFunction) {
 
 export async function create(req: Request, res: Response, next: NextFunction) {
   try {
-    const data = createSchema.parse(req.body);
+    const data = createSchema.parse(req.body) as Parameters<typeof createQuotation>[0];
     res.status(201).json(await createQuotation(data, req.user!.userId));
   } catch (err) {
     next(err);
@@ -72,7 +72,7 @@ export async function patchStatus(req: Request, res: Response, next: NextFunctio
 
 export async function update(req: Request, res: Response, next: NextFunction) {
   try {
-    const data = updateSchema.parse(req.body);
+    const data = updateSchema.parse(req.body) as Parameters<typeof updateQuotation>[1];
     res.json(await updateQuotation(req.params.id, data, req.user!.userId));
   } catch (err) {
     next(err);

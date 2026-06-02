@@ -23,7 +23,7 @@ export async function list(req: Request, res: Response, next: NextFunction) {
 
 export async function create(req: Request, res: Response, next: NextFunction) {
   try {
-    const data = createSchema.parse(req.body);
+    const data = createSchema.parse(req.body) as Parameters<typeof createProduct>[0];
     res.status(201).json(await createProduct(data));
   } catch (err) {
     next(err);

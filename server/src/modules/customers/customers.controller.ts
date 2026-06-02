@@ -32,7 +32,7 @@ export async function get(req: Request, res: Response, next: NextFunction) {
 
 export async function create(req: Request, res: Response, next: NextFunction) {
   try {
-    const data = createSchema.parse(req.body);
+    const data = createSchema.parse(req.body) as Parameters<typeof createCustomer>[0];
     res.status(201).json(await createCustomer(data, req.user!.userId));
   } catch (err) {
     next(err);
