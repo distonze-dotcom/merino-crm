@@ -4,7 +4,7 @@ import { Avatar } from "../design/Avatar";
 import { C, R } from "../design/tokens";
 import { useQuery } from "@tanstack/react-query";
 import { getAlerts } from "../../api/alerts";
-import { getQuotations } from "../../api/quotations";
+import { useQuotations } from "../../hooks/useQuotations";
 
 export const SIDEBAR_W = 232;
 
@@ -22,7 +22,7 @@ export function NavBar() {
   const navigate = useNavigate();
 
   const { data: alerts = [] } = useQuery({ queryKey: ["alerts"], queryFn: getAlerts, refetchInterval: 60_000 });
-  const { data: quotations = [] } = useQuery({ queryKey: ["quotations"], queryFn: () => getQuotations() });
+  const { data: quotations = [] } = useQuotations();
 
   const alertCount = Array.isArray(alerts) ? alerts.length : 0;
   const readyCount = Array.isArray(quotations) ? quotations.filter((q: { status: string }) => q.status === "READY_FOR_INVOICING").length : 0;

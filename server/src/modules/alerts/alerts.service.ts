@@ -7,25 +7,44 @@ function daysSince(date: Date): number {
 export async function getAlerts(userId: string, role: string) {
   const customerWhere = role === "SALES" ? { assignedToId: userId, active: true } : { active: true };
 
-  const customers = await prisma.customer.findMany({
-    where: customerWhere,
-    include: {
-      assignedTo: { select: { id: true, name: true, avatar: true, color: true } },
-      visits: { orderBy: { date: "desc" }, take: 1 },
-    },
-  });
+  // Single round-trip: customers + last visit, ready-to-invoice quotations,
+  // and all invoiced quotations (to derive last purchase per customer) in parallel.
+  const [customers, readyQuotations, invoicedRows] = await Promise.all([
+    prisma.customer.findMany({
+      where: customerWhere,
+      include: {
+        assignedTo: { select: { id: true, name: true, avatar: true, color: true } },
+        visits: { orderBy: { date: "desc" }, take: 1 },
+      },
+    }),
+    prisma.quotation.findMany({
+      where: {
+        status: "READY_FOR_INVOICING",
+        ...(role === "SALES" ? { salesRepId: userId } : {}),
+      },
+      include: {
+        customer: { select: { id: true, name: true, sector: true } },
+        salesRep: { select: { id: true, name: true, avatar: true, color: true } },
+        items: true,
+      },
+    }),
+    prisma.quotation.findMany({
+      where: {
+        status: "INVOICED",
+        ...(role === "SALES" ? { salesRepId: userId } : {}),
+      },
+      select: { customerId: true, updatedAt: true },
+      orderBy: { updatedAt: "desc" },
+    }),
+  ]);
 
-  const readyQuotations = await prisma.quotation.findMany({
-    where: {
-      status: "READY_FOR_INVOICING",
-      ...(role === "SALES" ? { salesRepId: userId } : {}),
-    },
-    include: {
-      customer: { select: { id: true, name: true, sector: true } },
-      salesRep: { select: { id: true, name: true, avatar: true, color: true } },
-      items: true,
-    },
-  });
+  // Map customerId -> most recent invoiced date (rows already sorted desc)
+  const lastPurchaseByCustomer = new Map<string, Date>();
+  for (const row of invoicedRows) {
+    if (!lastPurchaseByCustomer.has(row.customerId)) {
+      lastPurchaseByCustomer.set(row.customerId, row.updatedAt);
+    }
+  }
 
   type AlertItem = {
     id: string;
@@ -44,14 +63,11 @@ export async function getAlerts(userId: string, role: string) {
     const lastVisit = c.visits[0];
     const salesRep = c.assignedTo as { id: string; name: string; avatar: string; color: string };
 
-    // Last invoiced quotation for sin_compra logic
-    const lastInvoiced = await prisma.quotation.findFirst({
-      where: { customerId: c.id, status: "INVOICED" },
-      orderBy: { updatedAt: "desc" },
-    });
+    // Last invoiced date (from the pre-fetched map) for sin_compra logic
+    const lastPurchaseDate = lastPurchaseByCustomer.get(c.id);
 
-    if (lastInvoiced) {
-      const daysSincePurchase = daysSince(lastInvoiced.updatedAt);
+    if (lastPurchaseDate) {
+      const daysSincePurchase = daysSince(lastPurchaseDate);
       if (daysSincePurchase > 45) {
         alerts.push({
           id: `sin_compra_${c.id}`,

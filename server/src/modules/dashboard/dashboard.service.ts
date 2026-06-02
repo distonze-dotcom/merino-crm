@@ -10,6 +10,7 @@ type QuotationWithItems = {
   issueDate: Date;
   items: QuotationItem[];
   salesRep: { id: string; name: string; avatar: string; color: string };
+  customer: { sector: string };
 };
 type SalesRep = { id: string; name: string; avatar: string; color: string };
 
@@ -30,6 +31,7 @@ export async function getDashboard(userId: string, role: string) {
       include: {
         items: true,
         salesRep: { select: { id: true, name: true, avatar: true, color: true } },
+        customer: { select: { sector: true } },
       },
     }),
     prisma.visit.findMany({
@@ -78,13 +80,10 @@ export async function getDashboard(userId: string, role: string) {
 
   const sectorStats: Record<string, number> = {};
   for (const q of facturadas) {
-    const customer = await prisma.customer.findUnique({
-      where: { id: q.customerId },
-      select: { sector: true },
-    });
-    if (customer) {
+    const sector = q.customer?.sector;
+    if (sector) {
       const amount = q.items.reduce((s: number, i: QuotationItem) => s + i.subtotal, 0);
-      sectorStats[customer.sector] = (sectorStats[customer.sector] || 0) + amount;
+      sectorStats[sector] = (sectorStats[sector] || 0) + amount;
     }
   }
 
