@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Alertas from "./pages/Alertas";
 import Clientes from "./pages/Clientes";
 import Presupuestos from "./pages/Presupuestos";
+import NuevoPresupuesto from "./pages/NuevoPresupuesto";
 import Visitas from "./pages/Visitas";
 import Dashboard from "./pages/Dashboard";
 import Configuracion from "./pages/Configuracion";
@@ -23,6 +24,10 @@ export default function App() {
       <Route
         path="/presupuestos"
         element={<AppShell><Presupuestos /></AppShell>}
+      />
+      <Route
+        path="/presupuestos/nuevo"
+        element={<AppShell><NuevoPresupuesto /></AppShell>}
       />
       <Route
         path="/visitas"
