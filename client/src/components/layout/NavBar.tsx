@@ -21,7 +21,7 @@ export function NavBar() {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
 
-  const { data: alerts = [] } = useQuery({ queryKey: ["alerts"], queryFn: getAlerts, refetchInterval: 60_000 });
+  const { data: alerts = [] } = useQuery({ queryKey: ["alerts"], queryFn: getAlerts, refetchInterval: 5 * 60_000, staleTime: 60_000 });
   const { data: quotations = [] } = useQuotations();
 
   const alertCount = Array.isArray(alerts) ? alerts.length : 0;

@@ -6,5 +6,6 @@ export function useDashboard() {
 }
 
 export function useUsers() {
-  return useQuery({ queryKey: ["users"], queryFn: getUsers });
+  // Users (commercial team) change very rarely — cache aggressively.
+  return useQuery({ queryKey: ["users"], queryFn: getUsers, staleTime: Infinity });
 }

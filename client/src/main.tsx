@@ -9,7 +9,10 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
-      staleTime: 30_000,
+      staleTime: 5 * 60_000,        // data is "fresh" for 5 min → no refetch on navigation
+      gcTime: 30 * 60_000,          // keep cached data 30 min after unused
+      refetchOnWindowFocus: false,  // don't re-query every time the tab regains focus
+      refetchOnReconnect: false,    // don't re-query on network reconnect
     },
   },
 });
