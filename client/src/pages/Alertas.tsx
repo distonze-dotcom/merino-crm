@@ -7,11 +7,13 @@ import { Badge } from "../components/design/Badge";
 import { Avatar } from "../components/design/Avatar";
 import { C, fmt } from "../components/design/tokens";
 import { useExportToPresea } from "../hooks/useQuotations";
+import { useIsMobile } from "../hooks/useIsMobile";
 
 export default function Alertas() {
   const { data: alerts = [], isLoading } = useQuery({ queryKey: ["alerts"], queryFn: getAlerts });
   const exportMutation = useExportToPresea();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [toast, setToast] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -51,32 +53,36 @@ export default function Alertas() {
     return (
       <div style={{
         display: "flex",
-        alignItems: "center",
-        gap: 14,
+        alignItems: isMobile ? "stretch" : "center",
+        flexDirection: isMobile ? "column" : "row",
+        gap: isMobile ? 10 : 14,
         padding: "13px 16px",
         background: C.card,
         borderRadius: 3,
         border: `1px solid ${a.urgency === "alta" ? C.redDim : C.border}`,
         borderLeft: `4px solid ${a.urgency === "alta" ? C.red : C.yellow}`,
       }}>
-        <div style={{ fontSize: 22 }}>{iconTipo[a.type] || "⚠"}</div>
-        <div style={{ flex: 1 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
-            <span style={{ color: C.text, fontWeight: 700, fontSize: 14 }}>{a.customer?.name}</span>
-            <Badge label={labelTipo[a.type] || a.type} color={a.urgency === "alta" ? C.red : C.yellow} bg={a.urgency === "alta" ? C.redDim : C.yellowDim} />
-            <Badge label={a.customer?.sector} color={C.muted} />
-          </div>
-          <div style={{ color: C.muted, fontSize: 12 }}>{a.message}</div>
-          {isFacturar && a.quotation && (
-            <div style={{ color: C.purple, fontSize: 12, marginTop: 2 }}>
-              {a.quotation.number} · {fmt(a.quotation.total)}
+        <div style={{ display: "flex", gap: 12, flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 22, flexShrink: 0 }}>{iconTipo[a.type] || "⚠"}</div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3, flexWrap: "wrap" }}>
+              <span style={{ color: C.text, fontWeight: 700, fontSize: 14 }}>{a.customer?.name}</span>
+              <Badge label={labelTipo[a.type] || a.type} color={a.urgency === "alta" ? C.red : C.yellow} bg={a.urgency === "alta" ? C.redDim : C.yellowDim} />
+              <Badge label={a.customer?.sector} color={C.muted} />
             </div>
-          )}
+            <div style={{ color: C.muted, fontSize: 12 }}>{a.message}</div>
+            {isFacturar && a.quotation && (
+              <div style={{ color: C.purple, fontSize: 12, marginTop: 2 }}>
+                {a.quotation.number} · {fmt(a.quotation.total)}
+              </div>
+            )}
+          </div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <Avatar avatar={a.salesRep?.avatar} color={a.salesRep?.color} size={28} />
-          <span style={{ color: C.muted, fontSize: 12 }}>{a.salesRep?.name?.split(" ")[0]}</span>
-        </div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <Avatar avatar={a.salesRep?.avatar} color={a.salesRep?.color} size={28} />
+            <span style={{ color: C.muted, fontSize: 12 }}>{a.salesRep?.name?.split(" ")[0]}</span>
+          </div>
         {isFacturar ? (
           <button
             onClick={() => handleExport(a.quotation.id)}
@@ -88,10 +94,11 @@ export default function Alertas() {
           <button
             onClick={() => a.customer?.id && navigate(`/clientes?cliente=${a.customer.id}`)}
             disabled={!a.customer?.id}
-            style={{ background: C.surface, color: C.muted, border: `1px solid ${C.border}`, borderRadius: 3, padding: "7px 14px", fontWeight: 600, fontSize: 12, cursor: a.customer?.id ? "pointer" : "not-allowed" }}>
+            style={{ background: C.surface, color: C.muted, border: `1px solid ${C.border}`, borderRadius: 3, padding: "7px 14px", fontWeight: 600, fontSize: 12, cursor: a.customer?.id ? "pointer" : "not-allowed", whiteSpace: "nowrap" }}>
             Ver cliente
           </button>
         )}
+        </div>
       </div>
     );
   };
