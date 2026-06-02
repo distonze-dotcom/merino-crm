@@ -48,6 +48,7 @@ interface PreviewRow {
 
 function PreviewTable({ rows }: { rows: PreviewRow[] }) {
   const cols: (keyof PreviewRow)[] = ["CODIGO_PRO", "DETALLE", "MARCA", "UNID", "UNI_MED", "REVENTA SIN IVA"];
+  const labels: Record<string, string> = { CODIGO_PRO: "CODIGO", DETALLE: "DETALLE", MARCA: "MARCA", UNID: "UNID", UNI_MED: "UNI_MED", "REVENTA SIN IVA": "REVENTA SIN IVA" };
   return (
     <div style={{ overflowX: "auto", marginTop: 12 }}>
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
@@ -63,7 +64,7 @@ function PreviewTable({ rows }: { rows: PreviewRow[] }) {
                 textTransform: "uppercase",
                 letterSpacing: 0.6,
                 whiteSpace: "nowrap",
-              }}>{c}</th>
+              }}>{labels[c as string] ?? c}</th>
             ))}
           </tr>
         </thead>
@@ -256,8 +257,42 @@ export default function Configuracion() {
       try {
         const wb = XLSX.read(e.target?.result, { type: "array" });
         const ws = wb.Sheets[wb.SheetNames[0]];
-        const rows = XLSX.utils.sheet_to_json<PreviewRow>(ws, { defval: "" });
-        setPreview(rows.slice(0, 5));
+        const matrix = XLSX.utils.sheet_to_json<unknown[]>(ws, { header: 1, defval: "" });
+        const norm = (v: unknown) => String(v ?? "").trim().toUpperCase().replace(/\s+/g, " ");
+
+        // Locate the header row (file may have a title row above it)
+        let headerIdx = -1;
+        for (let i = 0; i < matrix.length; i++) {
+          const cells = (matrix[i] || []).map(norm);
+          if (cells.includes("CODIGO") && cells.includes("DETALLE")) { headerIdx = i; break; }
+        }
+        if (headerIdx === -1) { setPreview([]); return; }
+
+        const header = (matrix[headerIdx] || []).map(norm);
+        const findCol = (...names: string[]) => header.findIndex((h) => names.some((n) => h === n || h.includes(n)));
+        const cCodigo = findCol("CODIGO");
+        const cDetalle = findCol("DETALLE");
+        const cMarca = findCol("MARCA");
+        const cUnid = header.findIndex((h) => h === "UNID");
+        const cUniMed = findCol("UNI_MED", "UNI MED", "UNIDAD MEDIDA");
+        const cPrecio = findCol("REVENTA SIN IVA", "REVENTA");
+
+        const out: PreviewRow[] = [];
+        for (let i = headerIdx + 1; i < matrix.length && out.length < 5; i++) {
+          const r = matrix[i] || [];
+          const codigo = String(r[cCodigo] ?? "").trim();
+          const detalle = String(r[cDetalle] ?? "").trim();
+          if (!codigo || !detalle) continue;
+          out.push({
+            CODIGO_PRO: codigo,
+            DETALLE: detalle,
+            MARCA: cMarca >= 0 ? String(r[cMarca] ?? "") : "",
+            UNID: cUnid >= 0 ? String(r[cUnid] ?? "") : "",
+            UNI_MED: cUniMed >= 0 ? String(r[cUniMed] ?? "") : "",
+            "REVENTA SIN IVA": cPrecio >= 0 ? Number(r[cPrecio]) || 0 : 0,
+          });
+        }
+        setPreview(out);
       } catch {
         setPreview([]);
       }
