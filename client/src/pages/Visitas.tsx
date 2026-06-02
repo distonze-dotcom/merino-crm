@@ -134,8 +134,8 @@ export default function Visitas() {
         </div>
       )}
 
-      <div style={{ overflowX: isMobile ? "auto" : "visible" }}>
-      <div style={{ display: "flex", flexDirection: "column", gap: 8, minWidth: isMobile ? 680 : "auto" }}>
+      <div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {(visits as any[]).map((v: any) => {
           const vencida = v.nextVisitDate && daysSince(v.nextVisitDate) > 0;
           return (
@@ -146,9 +146,9 @@ export default function Visitas() {
               borderRadius: 3,
               padding: "14px 18px",
               display: "grid",
-              gridTemplateColumns: "1fr 160px 1fr 130px",
-              alignItems: "center",
-              gap: 14,
+              gridTemplateColumns: isMobile ? "1fr" : "1fr 160px 1fr 130px",
+              alignItems: isMobile ? "stretch" : "center",
+              gap: isMobile ? 8 : 14,
             }}>
               <div>
                 <div style={{ color: C.text, fontWeight: 700, fontSize: 14 }}>{v.customer?.name}</div>
