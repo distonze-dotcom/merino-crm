@@ -1,4 +1,5 @@
 import { prisma } from "../../lib/prisma";
+import { Prisma } from "@prisma/client";
 
 export async function listProducts() {
   return prisma.product.findMany({
@@ -39,47 +40,70 @@ export interface ImportResult {
   errors: string[];
 }
 
+const CHUNK = 500;
+
 export async function importProducts(rows: ImportRow[]): Promise<ImportResult> {
-  let imported = 0;
-  let updated = 0;
-  let skipped = 0;
   const errors: string[] = [];
 
-  for (const row of rows) {
+  // De-duplicate by code within the file (last occurrence wins).
+  const byCode = new Map<string, ImportRow>();
+  for (const r of rows) {
+    if (r.code) byCode.set(r.code, r);
+  }
+  const unique = [...byCode.values()];
+  const duplicatesInFile = rows.length - unique.length;
+
+  // One query to learn which codes already exist.
+  const existingRows = await prisma.product.findMany({ select: { code: true } });
+  const existingSet = new Set(existingRows.map((e) => e.code));
+
+  const toCreate = unique.filter((r) => !existingSet.has(r.code));
+  const toUpdate = unique.filter((r) => existingSet.has(r.code));
+
+  // Bulk INSERT new products (chunked createMany).
+  for (let i = 0; i < toCreate.length; i += CHUNK) {
+    const chunk = toCreate.slice(i, i + CHUNK);
     try {
-      const existing = await prisma.product.findUnique({ where: { code: row.code } });
-      if (existing) {
-        await prisma.product.update({
-          where: { code: row.code },
-          data: {
-            name: row.name,
-            description: row.description,
-            unit: row.unit,
-            price: row.price,
-            active: true,
-          },
-        });
-        updated++;
-      } else {
-        await prisma.product.create({
-          data: {
-            code: row.code,
-            name: row.name,
-            description: row.description,
-            unit: row.unit,
-            price: row.price,
-          },
-        });
-        imported++;
-      }
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : String(err);
-      errors.push(`Row ${row.code}: ${message}`);
-      skipped++;
+      await prisma.product.createMany({
+        data: chunk.map((r) => ({
+          code: r.code, name: r.name, description: r.description, unit: r.unit, price: r.price,
+        })),
+        skipDuplicates: true,
+      });
+    } catch (err) {
+      errors.push(`Insert chunk ${i}: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
 
-  return { imported, updated, skipped, errors };
+  // Bulk UPDATE existing products with a single VALUES-join query per chunk.
+  for (let i = 0; i < toUpdate.length; i += CHUNK) {
+    const chunk = toUpdate.slice(i, i + CHUNK);
+    const values = chunk.map(
+      (r) => Prisma.sql`(${r.code}, ${r.name}, ${r.description}, ${r.unit}, ${r.price})`
+    );
+    try {
+      await prisma.$executeRaw`
+        UPDATE "Product" AS p
+        SET name = v.name,
+            description = v.description,
+            unit = v.unit,
+            price = v.price::double precision,
+            active = true,
+            "updatedAt" = NOW()
+        FROM (VALUES ${Prisma.join(values)}) AS v(code, name, description, unit, price)
+        WHERE p.code = v.code
+      `;
+    } catch (err) {
+      errors.push(`Update chunk ${i}: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  }
+
+  return {
+    imported: toCreate.length,
+    updated: toUpdate.length,
+    skipped: duplicatesInFile,
+    errors,
+  };
 }
 
 export async function getProductStats() {
