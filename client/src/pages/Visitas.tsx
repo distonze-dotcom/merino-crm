@@ -6,7 +6,7 @@ import { useEscapeKey } from "../hooks/useEscapeKey";
 import { SectionHeader } from "../components/design/SectionHeader";
 import { Badge } from "../components/design/Badge";
 import { Avatar } from "../components/design/Avatar";
-import { C, fmt, fmtDate, daysSince } from "../components/design/tokens";
+import { C, fmt, fmtDate, daysSince, todayAR } from "../components/design/tokens";
 
 export default function Visitas() {
   const { data: visits = [], isLoading } = useVisits();
@@ -19,7 +19,7 @@ export default function Visitas() {
   const [form, setForm] = useState({
     customerId: "",
     salesRepId: user?.id || "",
-    date: new Date().toISOString().split("T")[0],
+    date: todayAR(),
     wasReceived: true,
     result: "",
     saleAmount: 0,
@@ -48,7 +48,7 @@ export default function Visitas() {
         salesRepId: user?.id || "",
       });
       setShowForm(false);
-      setForm({ customerId: "", salesRepId: user?.id || "", date: new Date().toISOString().split("T")[0], wasReceived: true, result: "", saleAmount: 0, nextVisitDate: "" });
+      setForm({ customerId: "", salesRepId: user?.id || "", date: todayAR(), wasReceived: true, result: "", saleAmount: 0, nextVisitDate: "" });
       showToast("✅ Visita registrada");
     } catch (err: any) {
       setError(err?.response?.data?.error || "Error al guardar la visita");

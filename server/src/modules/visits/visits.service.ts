@@ -1,5 +1,12 @@
 import { prisma } from "../../lib/prisma";
 
+// Parse a date value. Plain "YYYY-MM-DD" is anchored to 12:00 UTC so that
+// timezone shifts (e.g. Argentina UTC-3) never move it to the previous day.
+function parseDate(value: string): Date {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return new Date(`${value}T12:00:00.000Z`);
+  return new Date(value);
+}
+
 export async function listVisits(userId: string, role: string, customerId?: string) {
   const where: Record<string, unknown> = {};
   if (role === "SALES") where.salesRepId = userId;
@@ -30,11 +37,11 @@ export async function createVisit(
     data: {
       customerId: data.customerId,
       salesRepId: data.salesRepId,
-      date: new Date(data.date),
+      date: parseDate(data.date),
       wasReceived: data.wasReceived,
       result: data.result,
       saleAmount: data.saleAmount,
-      nextVisitDate: data.nextVisitDate ? new Date(data.nextVisitDate) : undefined,
+      nextVisitDate: data.nextVisitDate ? parseDate(data.nextVisitDate) : undefined,
     },
     include: {
       customer: { select: { id: true, name: true, sector: true } },
@@ -63,7 +70,7 @@ export async function updateVisit(
     where: { id },
     data: {
       ...data,
-      nextVisitDate: data.nextVisitDate ? new Date(data.nextVisitDate) : undefined,
+      nextVisitDate: data.nextVisitDate ? parseDate(data.nextVisitDate) : undefined,
     },
   });
   await prisma.auditLog.create({

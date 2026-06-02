@@ -22,6 +22,12 @@ const ALLOWED_TRANSITIONS: Record<QStatus, QStatus[]> = {
   REJECTED: [],
 };
 
+// Plain "YYYY-MM-DD" → anchored to 12:00 UTC (avoids timezone day-shift)
+function parseDate(value: string): Date {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return new Date(`${value}T12:00:00.000Z`);
+  return new Date(value);
+}
+
 async function nextNumber(): Promise<string> {
   const last = await prisma.quotation.findFirst({ orderBy: { number: "desc" } });
   if (!last) return "P-0001";
@@ -76,7 +82,7 @@ export async function createQuotation(
       number,
       customerId: data.customerId,
       salesRepId: data.salesRepId,
-      validUntil: data.validUntil ? new Date(data.validUntil) : undefined,
+      validUntil: data.validUntil ? parseDate(data.validUntil) : undefined,
       notes: data.notes,
       items: {
         create: data.items.map((item) => ({
@@ -153,7 +159,7 @@ export async function updateQuotation(
     where: { id },
     data: {
       notes: data.notes,
-      validUntil: data.validUntil ? new Date(data.validUntil) : undefined,
+      validUntil: data.validUntil ? parseDate(data.validUntil) : undefined,
       ...(data.items
         ? {
             items: {
