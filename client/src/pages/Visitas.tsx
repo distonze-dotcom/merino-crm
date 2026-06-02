@@ -3,6 +3,7 @@ import { useVisits, useCreateVisit } from "../hooks/useVisits";
 import { useCustomers } from "../hooks/useCustomers";
 import { useAuthStore } from "../store/auth.store";
 import { useEscapeKey } from "../hooks/useEscapeKey";
+import { useIsMobile } from "../hooks/useIsMobile";
 import { SectionHeader } from "../components/design/SectionHeader";
 import { Badge } from "../components/design/Badge";
 import { Avatar } from "../components/design/Avatar";
@@ -13,6 +14,7 @@ export default function Visitas() {
   const { data: customers = [] } = useCustomers();
   const createVisit = useCreateVisit();
   const { user } = useAuthStore();
+  const isMobile = useIsMobile();
   const [showForm, setShowForm] = useState(false);
   const [error, setError] = useState("");
   const [toast, setToast] = useState<string | null>(null);
@@ -132,7 +134,8 @@ export default function Visitas() {
         </div>
       )}
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      <div style={{ overflowX: isMobile ? "auto" : "visible" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8, minWidth: isMobile ? 680 : "auto" }}>
         {(visits as any[]).map((v: any) => {
           const vencida = v.nextVisitDate && daysSince(v.nextVisitDate) > 0;
           return (
@@ -174,6 +177,7 @@ export default function Visitas() {
             </div>
           );
         })}
+      </div>
       </div>
     </div>
   );

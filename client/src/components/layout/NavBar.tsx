@@ -17,7 +17,7 @@ const TABS = [
   { to: "/configuracion", icon: "⚙",  label: "Configuración", key: "configuracion", adminOnly: true },
 ];
 
-export function NavBar() {
+export function NavBar({ onNavigate }: { onNavigate?: () => void } = {}) {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
 
@@ -62,7 +62,7 @@ export function NavBar() {
         {TABS.filter(t => !t.adminOnly || user?.role === "ADMIN").map(t => {
           const b = badge(t.key);
           return (
-            <NavLink key={t.to} to={t.to} style={({ isActive }) => ({
+            <NavLink key={t.to} to={t.to} onClick={onNavigate} style={({ isActive }) => ({
               background: isActive ? C.accentDim : "transparent",
               color: isActive ? C.accent : C.text,
               borderRadius: R,

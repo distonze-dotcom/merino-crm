@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useCustomers } from "../hooks/useCustomers";
 import { useProducts } from "../hooks/useProducts";
 import { useCreateQuotation } from "../hooks/useQuotations";
+import { useIsMobile } from "../hooks/useIsMobile";
 import { SectionHeader } from "../components/design/SectionHeader";
 import { C, R, fmt } from "../components/design/tokens";
 
@@ -10,6 +11,7 @@ interface Line { productId: string; code: string; name: string; unit: string; qu
 
 export default function NuevoPresupuesto() {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const { data: customers = [] } = useCustomers();
   const { data: products = [] } = useProducts();
   const createMutation = useCreateQuotation();
@@ -67,7 +69,7 @@ export default function NuevoPresupuesto() {
         action={<button onClick={() => navigate("/presupuestos")} style={{ background: C.card, color: C.muted, border: `1px solid ${C.border}`, borderRadius: R, padding: "8px 16px", fontWeight: 600, fontSize: 13, cursor: "pointer" }}>← Volver</button>}
       />
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 360px", gap: 20, alignItems: "start" }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 360px", gap: 20, alignItems: "start" }}>
         {/* LEFT: builder */}
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
           {/* Customer */}
@@ -126,7 +128,7 @@ export default function NuevoPresupuesto() {
         </div>
 
         {/* RIGHT: summary */}
-        <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: R, padding: 20, position: "sticky", top: 20 }}>
+        <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: R, padding: 20, position: isMobile ? "static" : "sticky", top: 20 }}>
           <h3 style={{ color: C.text, fontSize: 13, fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.8, margin: "0 0 16px" }}>Resumen</h3>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
             <span style={{ color: C.muted, fontSize: 13 }}>Productos</span>

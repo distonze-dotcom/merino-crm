@@ -4,6 +4,7 @@ import { useCustomers, useCreateCustomer, useCustomer } from "../hooks/useCustom
 import { useUsers } from "../hooks/useDashboard";
 import { useAuthStore } from "../store/auth.store";
 import { useEscapeKey } from "../hooks/useEscapeKey";
+import { useIsMobile } from "../hooks/useIsMobile";
 import { SectionHeader } from "../components/design/SectionHeader";
 import { Badge } from "../components/design/Badge";
 import { Avatar } from "../components/design/Avatar";
@@ -184,6 +185,7 @@ function FichaCliente({ customerId, onClose }: { customerId: string; onClose: ()
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
 export default function Clientes() {
   const { data: customers = [], isLoading, isError, refetch } = useCustomers();
+  const isMobile = useIsMobile();
   const [searchParams, setSearchParams] = useSearchParams();
   const [fichaId, setFichaId] = useState<string | null>(null);
   const [filtroRubro, setFiltroRubro] = useState("Todos");
@@ -262,7 +264,8 @@ export default function Clientes() {
         </select>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <div style={{ overflowX: isMobile ? "auto" : "visible" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6, minWidth: isMobile ? 600 : "auto" }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 140px 110px 80px 80px", gap: 8, padding: "8px 14px", background: C.surface, borderRadius: R, border: `1px solid ${C.border}` }}>
           {["Cliente / Rubro", "Comercial", "Facturado Total", "Estado", ""].map((h) => (
             <span key={h} style={{ color: C.muted, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.6 }}>{h}</span>
@@ -303,6 +306,7 @@ export default function Clientes() {
             </div>
           );
         })}
+      </div>
       </div>
     </div>
   );

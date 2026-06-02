@@ -1,4 +1,5 @@
 import { useDashboard } from "../hooks/useDashboard";
+import { useIsMobile } from "../hooks/useIsMobile";
 import { SectionHeader } from "../components/design/SectionHeader";
 import { Kpi } from "../components/design/Kpi";
 import { Avatar } from "../components/design/Avatar";
@@ -6,6 +7,7 @@ import { C, fmt } from "../components/design/tokens";
 
 export default function Dashboard() {
   const { data, isLoading } = useDashboard();
+  const isMobile = useIsMobile();
 
   if (isLoading || !data) return <div style={{ color: C.muted, padding: 40, textAlign: "center" }}>Cargando análisis...</div>;
 
@@ -18,14 +20,14 @@ export default function Dashboard() {
     <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
       <SectionHeader title="Análisis Comercial" sub="Todos los comerciales" />
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2,1fr)" : "repeat(4,1fr)", gap: 12 }}>
         <Kpi icon="📋" label="Presupuestado" value={fmt(kpis.totalPresupuestado)} color={C.blue} />
         <Kpi icon="✅" label="Facturado" value={fmt(kpis.totalFacturado)} color={C.green} />
         <Kpi icon="❌" label="Perdido" value={fmt(kpis.totalPerdido)} color={C.red} />
         <Kpi icon="🎯" label="Conversión" value={`${kpis.conversion}%`} color={kpis.conversion >= 50 ? C.green : C.yellow} sub="pres. → factura" />
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16 }}>
         {/* Ranking comerciales */}
         <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 3, padding: 20 }}>
           <h3 style={{ color: C.text, fontSize: 13, fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.8, margin: "0 0 16px" }}>🏆 Ranking Comerciales</h3>

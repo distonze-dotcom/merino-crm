@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useQuotations, useChangeQuotationStatus, useExportToPresea } from "../hooks/useQuotations";
 import { useEscapeKey } from "../hooks/useEscapeKey";
+import { useIsMobile } from "../hooks/useIsMobile";
 import { useAuthStore } from "../store/auth.store";
 import { SectionHeader } from "../components/design/SectionHeader";
 import { Badge } from "../components/design/Badge";
@@ -56,6 +57,7 @@ export default function Presupuestos() {
   const location = useLocation();
   const { user } = useAuthStore();
   const isAdmin = user?.role === "ADMIN";
+  const isMobile = useIsMobile();
 
   const { data: quotations = [], isLoading, isError, refetch } = useQuotations();
   const exportMutation = useExportToPresea();
@@ -162,7 +164,8 @@ export default function Presupuestos() {
         ))}
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      <div style={{ overflowX: isMobile ? "auto" : "visible" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6, minWidth: isMobile ? 820 : "auto" }}>
         <div style={{ display: "grid", gridTemplateColumns: "70px 1fr 130px 90px 110px 150px 180px", gap: 8, padding: "8px 14px", background: C.surface, borderRadius: R, border: `1px solid ${C.border}` }}>
           {["N°", "Cliente", "Comercial", "Fecha", "Monto", "Estado", "Acción"].map((h) => (
             <span key={h} style={{ color: C.muted, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.6 }}>{h}</span>
@@ -215,6 +218,7 @@ export default function Presupuestos() {
             </div>
           );
         })}
+      </div>
       </div>
     </div>
   );
