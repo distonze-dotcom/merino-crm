@@ -55,16 +55,9 @@ export default function Login() {
         width: 380,
       }}>
         {/* Logo */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 32 }}>
-          <div style={{
-            width: 44, height: 44, borderRadius: 3,
-            background: `linear-gradient(135deg,${C.accent},#ff7043)`,
-            display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24,
-          }}>🎨</div>
-          <div>
-            <div style={{ fontWeight: 800, fontSize: 18, color: C.text }}>Andres Merino</div>
-            <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1 }}>CRM · Pinturerias</div>
-          </div>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 28 }}>
+          <img src="/logo-merino.png" alt="Andres Merino — Cadena de Pinturerías" style={{ width: 190, height: "auto", display: "block" }} />
+          <div style={{ fontSize: 11, color: C.muted, textTransform: "uppercase", letterSpacing: 1.5, marginTop: 10 }}>Sistema CRM · Fuerza de Ventas</div>
         </div>
 
         <h2 style={{ color: C.text, fontFamily: "'Inter','Segoe UI',system-ui,sans-serif", fontSize: 20, marginBottom: 24 }}>Iniciar sesión</h2>

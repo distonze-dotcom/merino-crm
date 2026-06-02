@@ -52,16 +52,9 @@ export function NavBar() {
       zIndex: 100,
     }}>
       {/* Logo */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "18px 18px", borderBottom: `1px solid ${C.border}` }}>
-        <div style={{
-          width: 36, height: 36, borderRadius: R,
-          background: `linear-gradient(135deg,${C.accent},#ff7043)`,
-          display: "flex", alignItems: "center", justifyContent: "center", fontSize: 19,
-        }}>🎨</div>
-        <div>
-          <div style={{ fontWeight: 800, fontSize: 14, color: C.text, letterSpacing: -0.3 }}>Andres Merino</div>
-          <div style={{ fontSize: 10, color: C.muted, textTransform: "uppercase", letterSpacing: 0.9 }}>Pinturerias · CRM</div>
-        </div>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "20px 18px 16px", borderBottom: `1px solid ${C.border}` }}>
+        <img src="/logo-merino.png" alt="Andres Merino — Cadena de Pinturerías" style={{ width: 150, height: "auto", display: "block" }} />
+        <div style={{ fontSize: 9, color: C.muted, textTransform: "uppercase", letterSpacing: 1.2, marginTop: 8 }}>Sistema CRM</div>
       </div>
 
       {/* Tabs */}
