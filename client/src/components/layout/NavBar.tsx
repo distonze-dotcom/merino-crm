@@ -57,8 +57,8 @@ export function NavBar({ onNavigate }: { onNavigate?: () => void } = {}) {
       background: NAV.bg, display: "flex", flexDirection: "column", zIndex: 100,
     }}>
       {/* Logo */}
-      <div style={{ padding: "22px 16px 18px", display: "flex", justifyContent: "center" }}>
-        <img src="/logo-blanco.png" alt="Andres Merino" style={{ width: "100%", maxWidth: 150, height: "auto", display: "block" }} />
+      <div style={{ padding: "16px 12px 4px", display: "flex", justifyContent: "center" }}>
+        <img src="/logo-blanco.png" alt="Andres Merino" style={{ width: "100%", maxWidth: 180, height: "auto", display: "block" }} />
       </div>
 
       {/* Tabs */}
