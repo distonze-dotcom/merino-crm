@@ -11,6 +11,7 @@ export async function getCustomer(id: string) {
 }
 
 export async function createCustomer(payload: {
+  code?: string;
   name: string;
   sector: string;
   phone?: string;

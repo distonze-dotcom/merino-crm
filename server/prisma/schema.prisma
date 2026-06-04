@@ -30,6 +30,7 @@ model User {
 
 model Customer {
   id           String   @id @default(cuid())
+  code         String?  @unique
   name         String
   sector       String
   phone        String?

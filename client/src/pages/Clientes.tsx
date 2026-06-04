@@ -21,7 +21,7 @@ function ModalNuevoCliente({ onClose, onSaved }: { onClose: () => void; onSaved:
   useEscapeKey(onClose);
 
   const [form, setForm] = useState({
-    name: "", sector: SECTORS[0], phone: "", email: "", address: "", notes: "",
+    code: "", name: "", sector: SECTORS[0], phone: "", email: "", address: "", notes: "",
     assignedToId: user?.id || "",
   });
   const [error, setError] = useState("");
@@ -33,6 +33,7 @@ function ModalNuevoCliente({ onClose, onSaved }: { onClose: () => void; onSaved:
     if (form.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email)) { setError("Email inválido."); return; }
     try {
       await createMutation.mutateAsync({
+        code: form.code.trim() || undefined,
         name: form.name.trim(), sector: form.sector,
         phone: form.phone || undefined, email: form.email || undefined,
         address: form.address || undefined, notes: form.notes || undefined,
@@ -53,7 +54,10 @@ function ModalNuevoCliente({ onClose, onSaved }: { onClose: () => void; onSaved:
       <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: R, padding: 28, width: 520, maxHeight: "88vh", overflow: "auto" }} onClick={(e) => e.stopPropagation()}>
         <h2 style={{ color: C.text, fontSize: 19, margin: "0 0 20px", fontWeight: 800 }}>Nuevo Cliente</h2>
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <div><label style={lbl}>Nombre *</label><input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} style={inp} /></div>
+          <div style={{ display: "grid", gridTemplateColumns: "120px 1fr", gap: 12 }}>
+            <div><label style={lbl}>Código</label><input value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value })} style={inp} placeholder="Opcional" /></div>
+            <div><label style={lbl}>Nombre *</label><input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} style={inp} /></div>
+          </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             <div><label style={lbl}>Rubro</label>
               <select value={form.sector} onChange={(e) => setForm({ ...form, sector: e.target.value })} style={inp}>
@@ -210,7 +214,8 @@ export default function Clientes() {
 
   const filtrados = useMemo(() => (customers as any[]).filter((c) => {
     const matchRubro = filtroRubro === "Todos" || c.sector === filtroRubro;
-    const matchSearch = !search || c.name.toLowerCase().includes(search.toLowerCase());
+    const q = search.trim().toLowerCase();
+    const matchSearch = !q || c.name.toLowerCase().includes(q) || (c.code && c.code.toLowerCase().includes(q));
     const lastPurchase = c.quotations?.find((q: any) => q.status === "INVOICED");
     const diasC = lastPurchase ? daysSince(lastPurchase.updatedAt) : 999;
     const matchEstado =
@@ -253,7 +258,7 @@ export default function Clientes() {
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="🔍 Buscar cliente..."
+          placeholder="🔍 Buscar por nombre o código..."
           style={{ background: C.card, color: C.text, border: `1px solid ${C.border}`, borderRadius: R, padding: "6px 12px", fontSize: 13, minWidth: 220 }}
         />
         {["Todos", "Activo", "En riesgo", "Inactivo"].map((e) => (
@@ -294,7 +299,7 @@ export default function Clientes() {
               style={{ display: "grid", gridTemplateColumns: "1fr 140px 110px 80px 80px", gap: 8, padding: "12px 14px", background: C.card, borderRadius: R, border: `1px solid ${C.border}`, cursor: "pointer", alignItems: "center" }}>
               <div>
                 <div style={{ color: C.text, fontWeight: 700, fontSize: 13 }}>{c.name}</div>
-                <div style={{ color: C.dim, fontSize: 11, marginTop: 2 }}>{c.sector}</div>
+                <div style={{ color: C.dim, fontSize: 11, marginTop: 2 }}>{c.code ? <span style={{ fontFamily: "monospace", color: C.muted }}>{c.code}</span> : ""}{c.code ? " · " : ""}{c.sector}</div>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 <Avatar avatar={c.assignedTo.avatar} color={c.assignedTo.color} size={22} />

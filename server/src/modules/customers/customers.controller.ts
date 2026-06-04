@@ -3,6 +3,7 @@ import { z } from "zod";
 import { listCustomers, getCustomer, createCustomer, updateCustomer } from "./customers.service";
 
 const createSchema = z.object({
+  code: z.string().optional(),
   name: z.string().min(1),
   sector: z.string().min(1),
   phone: z.string().optional(),
