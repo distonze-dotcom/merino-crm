@@ -22,10 +22,22 @@ export const C = {
   dim:       "#afbdca",
 } as const;
 
-export const R = 3;
-export const SHADOW = "0 1px 2px rgba(45,62,80,0.08)";
-export const SHADOW_LG = "0 6px 24px rgba(45,62,80,0.16)";
+export const R = 8;          // softer, modern corners (matches mockup)
+export const R_SM = 6;
+export const SHADOW = "0 1px 3px rgba(16,33,58,0.06)";
+export const SHADOW_LG = "0 8px 30px rgba(16,33,58,0.12)";
 export const FONT = "'Inter','Segoe UI',system-ui,-apple-system,sans-serif";
+
+// Dark navy sidebar palette (matches mockup)
+export const NAV = {
+  bg:       "#0c1f38",   // deep navy
+  bgActive: "#1b3a5e",   // active item pill
+  hover:    "#13304f",
+  text:     "#aebed3",   // muted light text
+  textActive: "#ffffff",
+  border:   "#1c3553",
+  accent:   "#e8541a",
+} as const;
 
 export const QUOTATION_STATUS_LABEL: Record<string, string> = {
   DRAFT:                "Borrador",

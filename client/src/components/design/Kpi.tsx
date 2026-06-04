@@ -13,7 +13,7 @@ export function Kpi({ icon, label, value, sub, color }: KpiProps) {
     <div style={{
       background: C.card,
       border: `1px solid ${C.border}`,
-      borderRadius: 3,
+      borderRadius: 8,
       boxShadow: SHADOW,
       padding: "18px 20px",
       position: "relative",

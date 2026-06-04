@@ -7,7 +7,7 @@ import { useAuthStore } from "../store/auth.store";
 import { SectionHeader } from "../components/design/SectionHeader";
 import { Badge } from "../components/design/Badge";
 import { Avatar } from "../components/design/Avatar";
-import { C, R, fmt, fmtDate, QUOTATION_STATUS_LABEL, QUOTATION_STATUS_COLOR, QUOTATION_STATUS_BG } from "../components/design/tokens";
+import { C, R, SHADOW, fmt, fmtDate, QUOTATION_STATUS_LABEL, QUOTATION_STATUS_COLOR, QUOTATION_STATUS_BG } from "../components/design/tokens";
 
 // Allowed forward transitions (mirror of server ALLOWED_TRANSITIONS)
 const NEXT_STATUS: Record<string, string[]> = {
@@ -87,6 +87,32 @@ export default function Presupuestos() {
   );
   const listos = useMemo(() => (quotations as any[]).filter((q) => q.status === "READY_FOR_INVOICING"), [quotations]);
 
+  // KPI summary + per-status counts
+  const stats = useMemo(() => {
+    const all = quotations as any[];
+    const sumItems = (q: any) => q.items.reduce((s: number, i: any) => s + i.subtotal, 0);
+    const byStatus = (st: string) => all.filter((q) => q.status === st);
+    const group = (sts: string[]) => all.filter((q) => sts.includes(q.status));
+    const sum = (arr: any[]) => arr.reduce((s, q) => s + sumItems(q), 0);
+    const ready = byStatus("READY_FOR_INVOICING");
+    const invoiced = byStatus("INVOICED");
+    const pending = group(["DRAFT", "SENT", "UNDER_REVIEW"]);
+    const approved = byStatus("APPROVED");
+    const counts: Record<string, number> = {};
+    for (const s of ["READY_FOR_INVOICING", "INVOICED", "APPROVED", "UNDER_REVIEW", "SENT", "DRAFT", "REJECTED"]) {
+      counts[s] = byStatus(s).length;
+    }
+    return {
+      counts,
+      cards: [
+        { label: "Esperando facturación", count: ready.length, amount: sum(ready), color: C.purple },
+        { label: "Facturados", count: invoiced.length, amount: sum(invoiced), color: C.green },
+        { label: "Pendientes", count: pending.length, amount: sum(pending), color: C.yellow },
+        { label: "Aprobados", count: approved.length, amount: sum(approved), color: C.blue },
+      ],
+    };
+  }, [quotations]);
+
   const handleExport = async () => {
     if (!exportQ) return;
     try {
@@ -124,13 +150,6 @@ export default function Presupuestos() {
     </div>
   );
 
-  const filterBtnStyle = (status: string) => ({
-    background: filtroEstado === status ? (QUOTATION_STATUS_BG[status] || C.accent) : C.card,
-    color: filtroEstado === status ? (QUOTATION_STATUS_COLOR[status] || "#fff") : C.muted,
-    border: `1px solid ${filtroEstado === status ? (QUOTATION_STATUS_COLOR[status] || C.accent) : C.border}`,
-    borderRadius: R, padding: "5px 14px", cursor: "pointer", fontSize: 12, fontWeight: 600,
-  });
-
   return (
     <div>
       {toast && (
@@ -146,22 +165,38 @@ export default function Presupuestos() {
         action={<button onClick={() => navigate("/presupuestos/nuevo")} style={{ background: C.accent, color: "#fff", border: "none", borderRadius: R, padding: "8px 18px", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>+ Nuevo Presupuesto</button>}
       />
 
-      {/* Admin invoicing queue */}
-      {isAdmin && listos.length > 0 && (
-        <div style={{ background: C.purpleDim, border: `1px solid ${C.purple}44`, borderRadius: R, padding: "12px 16px", marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div>
-            <span style={{ color: C.purple, fontWeight: 700, fontSize: 13 }}>🧾 {listos.length} presupuesto{listos.length > 1 ? "s" : ""} esperando facturación</span>
-            <span style={{ color: C.muted, fontSize: 12, marginLeft: 10 }}>{fmt(listos.reduce((s, q) => s + q.items.reduce((ss: number, i: any) => ss + i.subtotal, 0), 0))}</span>
+      {/* KPI summary cards */}
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2,1fr)" : "repeat(4,1fr)", gap: 14, marginBottom: 20 }}>
+        {stats.cards.map((c) => (
+          <div key={c.label} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: R, boxShadow: SHADOW, padding: "16px 18px", display: "flex", alignItems: "center", gap: 14 }}>
+            <div style={{ width: 42, height: 42, borderRadius: R, background: c.color + "1a", color: c.color, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 18, flexShrink: 0 }}>{c.count}</div>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ color: C.text, fontSize: 13, fontWeight: 600 }}>{c.label}</div>
+              <div style={{ color: C.muted, fontSize: 13, fontWeight: 700, marginTop: 2 }}>{fmt(c.amount)}</div>
+            </div>
           </div>
-          <button onClick={() => setFiltroEstado("READY_FOR_INVOICING")} style={{ background: C.purple, color: "#fff", border: "none", borderRadius: R, padding: "6px 14px", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>Ver cola</button>
-        </div>
-      )}
-
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14 }}>
-        <button onClick={() => setFiltroEstado("Todos")} style={filterBtnStyle("Todos")}>Todos</button>
-        {["READY_FOR_INVOICING", "INVOICED", "APPROVED", "UNDER_REVIEW", "SENT", "DRAFT", "REJECTED"].map((s) => (
-          <button key={s} onClick={() => setFiltroEstado(s)} style={filterBtnStyle(s)}>{QUOTATION_STATUS_LABEL[s]}</button>
         ))}
+      </div>
+
+      {/* Tabs with counts */}
+      <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 16, borderBottom: `1px solid ${C.border}` }}>
+        {[["Todos", null] as [string, string | null], ...(["READY_FOR_INVOICING", "INVOICED", "APPROVED", "UNDER_REVIEW", "SENT", "DRAFT", "REJECTED"].map((s) => [s, s] as [string, string]))].map(([key, st]) => {
+          const active = filtroEstado === key;
+          const label = st ? QUOTATION_STATUS_LABEL[st] : "Todos";
+          const count = st ? stats.counts[st] : (quotations as any[]).length;
+          return (
+            <button key={key} onClick={() => setFiltroEstado(key)} style={{
+              background: "transparent", border: "none", cursor: "pointer",
+              padding: "10px 14px", fontSize: 13, fontWeight: active ? 700 : 500,
+              color: active ? C.accent : C.muted,
+              borderBottom: `2px solid ${active ? C.accent : "transparent"}`, marginBottom: -1,
+              display: "flex", alignItems: "center", gap: 7,
+            }}>
+              {label}
+              <span style={{ background: active ? C.accent + "1a" : C.bg, color: active ? C.accent : C.muted, borderRadius: 20, padding: "1px 8px", fontSize: 11, fontWeight: 700 }}>{count}</span>
+            </button>
+          );
+        })}
       </div>
 
       <div style={{ overflowX: isMobile ? "auto" : "visible" }}>

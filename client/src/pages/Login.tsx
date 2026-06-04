@@ -31,7 +31,7 @@ export default function Login() {
     width: "100%",
     background: C.card,
     border: `1px solid ${C.border}`,
-    borderRadius: 3,
+    borderRadius: 8,
     padding: "11px 14px",
     color: C.text,
     fontSize: 14,
@@ -50,7 +50,7 @@ export default function Login() {
       <div style={{
         background: C.surface,
         border: `1px solid ${C.border}`,
-        borderRadius: 3,
+        borderRadius: 8,
         padding: "40px 36px",
         width: 380,
       }}>
@@ -85,7 +85,7 @@ export default function Login() {
           </div>
 
           {error && (
-            <div style={{ background: C.redDim, border: `1px solid ${C.red}33`, borderRadius: 3, padding: "10px 14px", color: C.red, fontSize: 13 }}>
+            <div style={{ background: C.redDim, border: `1px solid ${C.red}33`, borderRadius: 8, padding: "10px 14px", color: C.red, fontSize: 13 }}>
               {error}
             </div>
           )}
@@ -94,7 +94,7 @@ export default function Login() {
             background: loading ? C.accentDim : C.accent,
             color: "#fff",
             border: "none",
-            borderRadius: 3,
+            borderRadius: 8,
             padding: "13px",
             fontWeight: 800,
             fontSize: 14,
@@ -105,7 +105,7 @@ export default function Login() {
           </button>
         </form>
 
-        <div style={{ marginTop: 24, padding: "14px", background: C.card, borderRadius: 3, border: `1px solid ${C.border}` }}>
+        <div style={{ marginTop: 24, padding: "14px", background: C.card, borderRadius: 8, border: `1px solid ${C.border}` }}>
           <div style={{ color: C.muted, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.7, marginBottom: 8 }}>Credenciales de prueba</div>
           {[
             ["admin@merino.com", "ADMIN"],

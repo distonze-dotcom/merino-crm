@@ -29,7 +29,7 @@ export default function Dashboard() {
 
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16 }}>
         {/* Ranking comerciales */}
-        <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 3, padding: 20 }}>
+        <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 8, padding: 20 }}>
           <h3 style={{ color: C.text, fontSize: 13, fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.8, margin: "0 0 16px" }}>🏆 Ranking Comerciales</h3>
           {repStats.map((rep: any, i: number) => (
             <div key={rep.id} style={{ marginBottom: 16 }}>
@@ -47,8 +47,8 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-              <div style={{ height: 4, background: C.border, borderRadius: 3 }}>
-                <div style={{ width: `${(rep.monto / maxMonto) * 100}%`, height: "100%", background: rep.color, borderRadius: 3 }} />
+              <div style={{ height: 4, background: C.border, borderRadius: 8 }}>
+                <div style={{ width: `${(rep.monto / maxMonto) * 100}%`, height: "100%", background: rep.color, borderRadius: 8 }} />
               </div>
             </div>
           ))}
@@ -56,7 +56,7 @@ export default function Dashboard() {
 
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {/* Motivos pérdida */}
-          <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 3, padding: 20 }}>
+          <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 8, padding: 20 }}>
             <h3 style={{ color: C.text, fontSize: 13, fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.8, margin: "0 0 14px" }}>🔍 Por qué se pierden ventas</h3>
             {lossReasons.length === 0 && <div style={{ color: C.dim, fontSize: 13 }}>Sin datos</div>}
             {lossReasons.map((lr: any) => {
@@ -66,8 +66,8 @@ export default function Dashboard() {
                     <span style={{ color: C.text, fontSize: 12 }}>{lr.reason}</span>
                     <span style={{ color: C.red, fontWeight: 700, fontSize: 12 }}>{fmt(lr.amount)}</span>
                   </div>
-                  <div style={{ height: 5, background: C.border, borderRadius: 3 }}>
-                    <div style={{ width: `${(lr.amount / totalLoss) * 100}%`, height: "100%", background: C.red, borderRadius: 3 }} />
+                  <div style={{ height: 5, background: C.border, borderRadius: 8 }}>
+                    <div style={{ width: `${(lr.amount / totalLoss) * 100}%`, height: "100%", background: C.red, borderRadius: 8 }} />
                   </div>
                 </div>
               );
@@ -75,7 +75,7 @@ export default function Dashboard() {
           </div>
 
           {/* Por rubro */}
-          <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 3, padding: 20 }}>
+          <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 8, padding: 20 }}>
             <h3 style={{ color: C.text, fontSize: 13, fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.8, margin: "0 0 14px" }}>🏗 Facturado por Rubro</h3>
             {sectorStats.length === 0 && <div style={{ color: C.dim, fontSize: 13 }}>Sin datos</div>}
             {sectorStats.map((ss: any) => {
@@ -85,8 +85,8 @@ export default function Dashboard() {
                     <span style={{ color: C.text, fontSize: 12 }}>{ss.sector}</span>
                     <span style={{ color: C.green, fontWeight: 700, fontSize: 12 }}>{fmt(ss.amount)}</span>
                   </div>
-                  <div style={{ height: 5, background: C.border, borderRadius: 3 }}>
-                    <div style={{ width: `${(ss.amount / maxSector) * 100}%`, height: "100%", background: C.green, borderRadius: 3 }} />
+                  <div style={{ height: 5, background: C.border, borderRadius: 8 }}>
+                    <div style={{ width: `${(ss.amount / maxSector) * 100}%`, height: "100%", background: C.green, borderRadius: 8 }} />
                   </div>
                 </div>
               );

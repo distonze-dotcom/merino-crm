@@ -57,16 +57,16 @@ export default function Visitas() {
     }
   };
 
-  const inp = { width: "100%", background: C.card, border: `1px solid ${C.border}`, borderRadius: 3, padding: "8px 12px", color: C.text, fontSize: 13, boxSizing: "border-box" as const };
+  const inp = { width: "100%", background: C.card, border: `1px solid ${C.border}`, borderRadius: 8, padding: "8px 12px", color: C.text, fontSize: 13, boxSizing: "border-box" as const };
 
   return (
     <div>
       {toast && (
-        <div role="status" style={{ position: "fixed", bottom: 24, right: 24, background: C.surface, border: `1px solid ${C.border}`, color: C.text, borderRadius: 3, padding: "12px 20px", fontWeight: 700, fontSize: 13, zIndex: 500, boxShadow: "0 6px 24px rgba(45,62,80,0.16)" }}>{toast}</div>
+        <div role="status" style={{ position: "fixed", bottom: 24, right: 24, background: C.surface, border: `1px solid ${C.border}`, color: C.text, borderRadius: 8, padding: "12px 20px", fontWeight: 700, fontSize: 13, zIndex: 500, boxShadow: "0 6px 24px rgba(45,62,80,0.16)" }}>{toast}</div>
       )}
       {showForm && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(45,62,80,0.45)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center" }} onClick={() => setShowForm(false)}>
-          <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 3, padding: 28, width: 480 }} onClick={e => e.stopPropagation()}>
+          <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8, padding: 28, width: 480 }} onClick={e => e.stopPropagation()}>
             <h3 style={{ color: C.text, fontFamily: "'Inter','Segoe UI',system-ui,sans-serif", fontSize: 18, margin: "0 0 20px" }}>Registrar nueva visita</h3>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               <div>
@@ -100,23 +100,23 @@ export default function Visitas() {
                 <input type="date" value={form.nextVisitDate} onChange={e => setForm({ ...form, nextVisitDate: e.target.value })} style={inp} />
               </div>
             </div>
-            {error && <div style={{ background: C.redDim, border: `1px solid ${C.red}33`, color: C.red, borderRadius: 3, padding: "9px 12px", fontSize: 13, marginTop: 14 }}>{error}</div>}
+            {error && <div style={{ background: C.redDim, border: `1px solid ${C.red}33`, color: C.red, borderRadius: 8, padding: "9px 12px", fontSize: 13, marginTop: 14 }}>{error}</div>}
             <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
-              <button onClick={handleSubmit} disabled={createVisit.isPending} style={{ flex: 1, background: createVisit.isPending ? C.accentDim : C.accent, color: createVisit.isPending ? C.accent : "#fff", border: "none", borderRadius: 3, padding: "10px", fontWeight: 700, fontSize: 13, cursor: createVisit.isPending ? "wait" : "pointer" }}>
+              <button onClick={handleSubmit} disabled={createVisit.isPending} style={{ flex: 1, background: createVisit.isPending ? C.accentDim : C.accent, color: createVisit.isPending ? C.accent : "#fff", border: "none", borderRadius: 8, padding: "10px", fontWeight: 700, fontSize: 13, cursor: createVisit.isPending ? "wait" : "pointer" }}>
                 {createVisit.isPending ? "Guardando..." : "Guardar visita"}
               </button>
-              <button onClick={() => setShowForm(false)} style={{ background: C.card, color: C.muted, border: `1px solid ${C.border}`, borderRadius: 3, padding: "10px 16px", cursor: "pointer", fontSize: 13 }}>Cancelar</button>
+              <button onClick={() => setShowForm(false)} style={{ background: C.card, color: C.muted, border: `1px solid ${C.border}`, borderRadius: 8, padding: "10px 16px", cursor: "pointer", fontSize: 13 }}>Cancelar</button>
             </div>
           </div>
         </div>
       )}
 
       <SectionHeader title="Registro de Visitas" sub="Planilla de recorridos y seguimiento" action={
-        <button onClick={() => setShowForm(true)} style={{ background: C.accent, color: "#fff", border: "none", borderRadius: 3, padding: "8px 18px", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>+ Registrar Visita</button>
+        <button onClick={() => setShowForm(true)} style={{ background: C.accent, color: "#fff", border: "none", borderRadius: 8, padding: "8px 18px", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>+ Registrar Visita</button>
       } />
 
       {pendientesHoy.length > 0 && (
-        <div style={{ background: C.blueDim, border: `1px solid ${C.blue}44`, borderRadius: 3, padding: "12px 16px", marginBottom: 16 }}>
+        <div style={{ background: C.blueDim, border: `1px solid ${C.blue}44`, borderRadius: 8, padding: "12px 16px", marginBottom: 16 }}>
           <span style={{ color: C.blue, fontWeight: 700, fontSize: 13 }}>📅 {pendientesHoy.length} seguimiento{pendientesHoy.length > 1 ? "s" : ""} pendiente{pendientesHoy.length > 1 ? "s" : ""} hoy</span>
           <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
             {pendientesHoy.map((v: any) => (
@@ -127,7 +127,7 @@ export default function Visitas() {
       )}
 
       {(visits as any[]).length === 0 && (
-        <div style={{ textAlign: "center", padding: 50, color: C.muted, background: C.card, borderRadius: 3, border: `1px solid ${C.border}` }}>
+        <div style={{ textAlign: "center", padding: 50, color: C.muted, background: C.card, borderRadius: 8, border: `1px solid ${C.border}` }}>
           <div style={{ fontSize: 32, marginBottom: 8 }}>🗺</div>
           <div style={{ color: C.text, fontWeight: 700 }}>Sin visitas registradas</div>
           <div style={{ fontSize: 13, marginTop: 4 }}>Registrá la primera con “+ Registrar Visita”.</div>
@@ -143,7 +143,7 @@ export default function Visitas() {
               background: C.card,
               border: `1px solid ${vencida && v.saleAmount === 0 ? C.redDim : C.border}`,
               borderLeft: `4px solid ${v.saleAmount > 0 ? C.green : v.wasReceived ? C.yellow : C.red}`,
-              borderRadius: 3,
+              borderRadius: 8,
               padding: "14px 18px",
               display: "grid",
               gridTemplateColumns: isMobile ? "1fr" : "1fr 160px 1fr 130px",

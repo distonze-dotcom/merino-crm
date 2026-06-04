@@ -23,7 +23,7 @@ function StatBox({ label, value, color }: { label: string; value: string | numbe
     <div style={{
       background: C.card,
       border: `1px solid ${C.border}`,
-      borderRadius: 3,
+      borderRadius: 8,
       padding: "14px 18px",
       display: "flex",
       flexDirection: "column",
@@ -130,7 +130,7 @@ function NewUserModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
   const inputStyle = {
     background: C.surface,
     border: `1px solid ${C.border}`,
-    borderRadius: 3,
+    borderRadius: 8,
     color: C.text,
     padding: "9px 12px",
     fontSize: 13,
@@ -146,7 +146,7 @@ function NewUserModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
       <div style={{
         background: C.card,
         border: `1px solid ${C.border}`,
-        borderRadius: 3,
+        borderRadius: 8,
         padding: 28,
         width: 400,
         maxWidth: "90vw",
@@ -191,7 +191,7 @@ function NewUserModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
         </div>
 
         {error && (
-          <div style={{ marginTop: 12, background: C.redDim, border: `1px solid ${C.red}`, borderRadius: 3, padding: "8px 12px", color: C.red, fontSize: 12 }}>
+          <div style={{ marginTop: 12, background: C.redDim, border: `1px solid ${C.red}`, borderRadius: 8, padding: "8px 12px", color: C.red, fontSize: 12 }}>
             {error}
           </div>
         )}
@@ -199,11 +199,11 @@ function NewUserModal({ onClose, onCreated }: { onClose: () => void; onCreated: 
         <div style={{ display: "flex", gap: 10, marginTop: 20, justifyContent: "flex-end" }}>
           <button onClick={onClose} style={{
             background: "transparent", border: `1px solid ${C.border}`,
-            color: C.muted, borderRadius: 3, padding: "8px 16px", fontSize: 13, cursor: "pointer",
+            color: C.muted, borderRadius: 8, padding: "8px 16px", fontSize: 13, cursor: "pointer",
           }}>Cancelar</button>
           <button onClick={handleSubmit} disabled={loading} style={{
             background: C.accent, border: "none", color: "#fff",
-            borderRadius: 3, padding: "8px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer",
+            borderRadius: 8, padding: "8px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer",
             opacity: loading ? 0.7 : 1,
           }}>{loading ? "Guardando..." : "Crear Usuario"}</button>
         </div>
@@ -336,7 +336,7 @@ export default function Configuracion() {
       <SectionHeader title="Configuración" sub="Importación de productos y gestión de usuarios" />
 
       {/* ── Section 1: Import ── */}
-      <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 3, padding: 24 }}>
+      <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 8, padding: 24 }}>
         <h2 style={{ color: C.text, fontSize: 14, fontWeight: 800, textTransform: "uppercase", letterSpacing: 0.8, margin: "0 0 4px" }}>
           Importar Lista de Precios
         </h2>
@@ -363,7 +363,7 @@ export default function Configuracion() {
           onClick={() => fileInputRef.current?.click()}
           style={{
             border: `2px dashed ${dragOver ? C.accent : C.border}`,
-            borderRadius: 3,
+            borderRadius: 8,
             padding: "32px 24px",
             textAlign: "center",
             cursor: "pointer",
@@ -414,7 +414,7 @@ export default function Configuracion() {
                 background: C.accent,
                 border: "none",
                 color: "#fff",
-                borderRadius: 3,
+                borderRadius: 8,
                 padding: "11px 28px",
                 fontSize: 14,
                 fontWeight: 700,
@@ -441,7 +441,7 @@ export default function Configuracion() {
             marginTop: 16,
             background: C.greenDim,
             border: `1px solid ${C.green}`,
-            borderRadius: 3,
+            borderRadius: 8,
             padding: "14px 18px",
           }}>
             <div style={{ color: C.green, fontWeight: 700, fontSize: 14, marginBottom: 6 }}>
@@ -465,7 +465,7 @@ export default function Configuracion() {
                 background: "transparent",
                 border: `1px solid ${C.border}`,
                 color: C.muted,
-                borderRadius: 3,
+                borderRadius: 8,
                 padding: "4px 12px",
                 fontSize: 12,
                 cursor: "pointer",
@@ -480,7 +480,7 @@ export default function Configuracion() {
             marginTop: 16,
             background: C.redDim,
             border: `1px solid ${C.red}`,
-            borderRadius: 3,
+            borderRadius: 8,
             padding: "12px 16px",
             color: C.red,
             fontSize: 13,
@@ -491,7 +491,7 @@ export default function Configuracion() {
       </div>
 
       {/* ── Section 2: Users ── */}
-      <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 3, padding: 24 }}>
+      <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 8, padding: 24 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
           <div>
             <h2 style={{ color: C.text, fontSize: 14, fontWeight: 800, textTransform: "uppercase", letterSpacing: 0.8, margin: 0 }}>
@@ -505,7 +505,7 @@ export default function Configuracion() {
               background: C.accent,
               border: "none",
               color: "#fff",
-              borderRadius: 3,
+              borderRadius: 8,
               padding: "8px 18px",
               fontSize: 13,
               fontWeight: 700,
@@ -528,7 +528,7 @@ export default function Configuracion() {
               padding: "12px 16px",
               background: C.surface,
               border: `1px solid ${C.border}`,
-              borderRadius: 3,
+              borderRadius: 8,
             }}>
               <Avatar avatar={u.avatar} color={u.color} size={36} />
               <div style={{ flex: 1 }}>
@@ -539,7 +539,7 @@ export default function Configuracion() {
                 background: u.role === "ADMIN" ? `${C.accent}22` : C.blueDim,
                 color: u.role === "ADMIN" ? C.accent : C.blue,
                 border: `1px solid ${u.role === "ADMIN" ? C.accentDim : C.blue}`,
-                borderRadius: 3,
+                borderRadius: 8,
                 padding: "2px 10px",
                 fontSize: 10,
                 fontWeight: 800,
@@ -553,7 +553,7 @@ export default function Configuracion() {
                   background: C.redDim,
                   color: C.red,
                   border: `1px solid ${C.red}`,
-                  borderRadius: 3,
+                  borderRadius: 8,
                   padding: "2px 8px",
                   fontSize: 10,
                   fontWeight: 700,
