@@ -57,10 +57,8 @@ export function NavBar({ onNavigate }: { onNavigate?: () => void } = {}) {
       background: NAV.bg, display: "flex", flexDirection: "column", zIndex: 100,
     }}>
       {/* Logo */}
-      <div style={{ padding: "20px 16px 16px", display: "flex", justifyContent: "center" }}>
-        <div style={{ background: "#fff", borderRadius: R_SM, padding: "8px 12px", display: "flex", justifyContent: "center", width: "100%" }}>
-          <img src="/logo-merino.png" alt="Andres Merino" style={{ width: "100%", maxWidth: 130, height: "auto", display: "block" }} />
-        </div>
+      <div style={{ padding: "22px 16px 18px", display: "flex", justifyContent: "center" }}>
+        <img src="/logo-blanco.png" alt="Andres Merino" style={{ width: "100%", maxWidth: 150, height: "auto", display: "block" }} />
       </div>
 
       {/* Tabs */}
