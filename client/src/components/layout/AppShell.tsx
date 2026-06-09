@@ -21,7 +21,7 @@ export function AppShell({ children }: AppShellProps) {
         {/* Top bar */}
         <div style={{ position: "sticky", top: 0, zIndex: 90, display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: C.surface, borderBottom: `1px solid ${C.border}` }}>
           <button onClick={() => setDrawerOpen(true)} aria-label="Abrir menú" style={{ background: "transparent", border: `1px solid ${C.border}`, borderRadius: 6, padding: "6px 10px", fontSize: 18, lineHeight: 1, cursor: "pointer", color: C.text }}>☰</button>
-          <img src="/logo-merino.png" alt="Andres Merino" style={{ height: 30, width: "auto" }} />
+          <span style={{ color: C.text, fontSize: 18, fontWeight: 800, letterSpacing: -0.5 }}>Nexoft</span>
         </div>
 
         {/* Drawer */}

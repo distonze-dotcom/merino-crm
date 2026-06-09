@@ -56,9 +56,10 @@ export function NavBar({ onNavigate }: { onNavigate?: () => void } = {}) {
       position: "fixed", top: 0, left: 0, bottom: 0, width: SIDEBAR_W,
       background: NAV.bg, display: "flex", flexDirection: "column", zIndex: 100,
     }}>
-      {/* Logo */}
-      <div style={{ padding: "16px 12px 4px", display: "flex", justifyContent: "center" }}>
-        <img src="/logo-blanco.png" alt="Andres Merino" style={{ width: "100%", maxWidth: 180, height: "auto", display: "block" }} />
+      {/* Brand */}
+      <div style={{ padding: "22px 18px 16px" }}>
+        <div style={{ color: NAV.textActive, fontSize: 24, fontWeight: 800, letterSpacing: -0.5 }}>Nexoft</div>
+        <div style={{ color: NAV.text, fontSize: 10, textTransform: "uppercase", letterSpacing: 1.4, marginTop: 2 }}>Sistema CRM</div>
       </div>
 
       {/* Tabs */}
