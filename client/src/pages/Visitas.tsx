@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useVisits, useCreateVisit } from "../hooks/useVisits";
 import { useCustomers } from "../hooks/useCustomers";
 import { useAuthStore } from "../store/auth.store";
@@ -7,7 +7,7 @@ import { useIsMobile } from "../hooks/useIsMobile";
 import { SectionHeader } from "../components/design/SectionHeader";
 import { Badge } from "../components/design/Badge";
 import { Avatar } from "../components/design/Avatar";
-import { C, fmt, fmtDate, daysSince, todayAR } from "../components/design/tokens";
+import { C, R, fmt, fmtDate, daysSince, todayAR } from "../components/design/tokens";
 
 export default function Visitas() {
   const { data: visits = [], isLoading } = useVisits();
@@ -18,6 +18,7 @@ export default function Visitas() {
   const [showForm, setShowForm] = useState(false);
   const [error, setError] = useState("");
   const [toast, setToast] = useState<string | null>(null);
+  const [custSearch, setCustSearch] = useState("");
   const [form, setForm] = useState({
     customerId: "",
     salesRepId: user?.id || "",
@@ -31,6 +32,15 @@ export default function Visitas() {
   useEscapeKey(() => setShowForm(false), showForm);
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3500); };
+
+  const selectedCustomer = (customers as any[]).find((c) => c.id === form.customerId);
+  const custResults = useMemo(() => {
+    const q = custSearch.trim().toLowerCase();
+    if (!q) return [];
+    return (customers as any[])
+      .filter((c) => c.name.toLowerCase().includes(q) || (c.code && c.code.toLowerCase().includes(q)))
+      .slice(0, 30);
+  }, [custSearch, customers]);
 
   if (isLoading) return <div style={{ color: C.muted, padding: 40, textAlign: "center" }}>Cargando visitas...</div>;
 
@@ -51,6 +61,7 @@ export default function Visitas() {
       });
       setShowForm(false);
       setForm({ customerId: "", salesRepId: user?.id || "", date: todayAR(), wasReceived: true, result: "", saleAmount: 0, nextVisitDate: "" });
+      setCustSearch("");
       showToast("✅ Visita registrada");
     } catch (err: any) {
       setError(err?.response?.data?.error || "Error al guardar la visita");
@@ -71,10 +82,36 @@ export default function Visitas() {
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               <div>
                 <div style={{ color: C.muted, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.7, marginBottom: 5 }}>Cliente</div>
-                <select value={form.customerId} onChange={e => setForm({ ...form, customerId: e.target.value })} style={inp}>
-                  <option value="">Seleccionar cliente...</option>
-                  {(customers as any[]).map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select>
+                {!selectedCustomer ? (
+                  <div style={{ position: "relative" }}>
+                    <input autoFocus value={custSearch} onChange={(e) => setCustSearch(e.target.value)} placeholder="🔍 Buscar por nombre o código..." style={inp} />
+                    {custResults.length > 0 && (
+                      <div style={{ position: "absolute", left: 0, right: 0, top: 40, background: C.surface, border: `1px solid ${C.border}`, borderRadius: R, boxShadow: "0 8px 30px rgba(16,33,58,0.16)", zIndex: 30, maxHeight: 240, overflow: "auto" }}>
+                        {custResults.map((c) => (
+                          <div key={c.id} onClick={() => { setForm({ ...form, customerId: c.id }); setCustSearch(""); }}
+                            style={{ padding: "9px 12px", cursor: "pointer", borderBottom: `1px solid ${C.border}` }}
+                            onMouseEnter={(e) => (e.currentTarget.style.background = C.bg)} onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
+                            <div style={{ color: C.text, fontSize: 13, fontWeight: 600 }}>{c.name}</div>
+                            <div style={{ color: C.dim, fontSize: 11, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                              {c.code ? <span style={{ fontFamily: "monospace" }}>{c.code}</span> : null}{c.code && c.address ? " · " : ""}{c.address || ""}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {custSearch.trim() && custResults.length === 0 && <div style={{ color: C.dim, fontSize: 12, marginTop: 6 }}>Sin clientes que coincidan.</div>}
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: C.bg, borderRadius: R, padding: "9px 12px", border: `1px solid ${C.border}` }}>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ color: C.text, fontSize: 13.5, fontWeight: 700 }}>{selectedCustomer.name}</div>
+                      <div style={{ color: C.muted, fontSize: 11, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        {selectedCustomer.code ? <span style={{ fontFamily: "monospace" }}>{selectedCustomer.code}</span> : null}{selectedCustomer.code && selectedCustomer.address ? " · " : ""}{selectedCustomer.address || ""}
+                      </div>
+                    </div>
+                    <button type="button" onClick={() => setForm({ ...form, customerId: "" })} style={{ background: "transparent", color: C.accent, border: `1px solid ${C.border}`, borderRadius: R, padding: "6px 10px", fontWeight: 600, fontSize: 12, cursor: "pointer", whiteSpace: "nowrap" }}>Cambiar</button>
+                  </div>
+                )}
               </div>
               <div>
                 <div style={{ color: C.muted, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.7, marginBottom: 5 }}>Fecha</div>
