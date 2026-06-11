@@ -53,6 +53,18 @@ export async function getDashboard(userId: string, role: string) {
   const conversion = allQuotations.length
     ? Math.round((facturadas.length / allQuotations.length) * 100)
     : 0;
+  // Win rate = facturados / (facturados + perdidos) — decisiones cerradas
+  const decided = facturadas.length + perdidas.length;
+  const winRate = decided ? Math.round((facturadas.length / decided) * 100) : 0;
+  // Ticket promedio facturado
+  const avgTicket = facturadas.length ? Math.round(totalFacturado / facturadas.length) : 0;
+
+  // Presupuestos por estado (conteo + monto)
+  const STATUSES = ["DRAFT", "SENT", "UNDER_REVIEW", "APPROVED", "READY_FOR_INVOICING", "INVOICED", "REJECTED"];
+  const statusBreakdown = STATUSES.map((status) => {
+    const arr = allQuotations.filter((q) => q.status === status);
+    return { status, count: arr.length, amount: sumQuotationItems(arr) };
+  }).filter((s) => s.count > 0);
 
   const lossReasons: Record<string, number> = {};
   for (const q of perdidas) {
@@ -93,9 +105,13 @@ export async function getDashboard(userId: string, role: string) {
       totalFacturado,
       totalPerdido,
       conversion,
+      winRate,
+      avgTicket,
+      totalQuotations: allQuotations.length,
       totalClientes: allCustomers.length,
       totalVisitas:  allVisits.length,
     },
+    statusBreakdown,
     lossReasons: Object.entries(lossReasons)
       .map(([reason, amount]) => ({ reason, amount }))
       .sort((a: { amount: number }, b: { amount: number }) => b.amount - a.amount),
