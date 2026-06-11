@@ -14,7 +14,7 @@ export async function createCustomer(payload: {
   code?: string;
   name: string;
   sector: string;
-  priceList?: "reventa" | "general";
+  priceList?: "reventa" | "general" | "licitacion";
   phone?: string;
   email?: string;
   address?: string;

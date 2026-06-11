@@ -6,7 +6,7 @@ const createSchema = z.object({
   code: z.string().optional(),
   name: z.string().min(1),
   sector: z.string().min(1),
-  priceList: z.enum(["reventa", "general"]).optional(),
+  priceList: z.enum(["reventa", "general", "licitacion"]).optional(),
   phone: z.string().optional(),
   email: z.string().email().optional(),
   address: z.string().optional(),

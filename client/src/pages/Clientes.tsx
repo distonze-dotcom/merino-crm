@@ -21,7 +21,7 @@ function ModalNuevoCliente({ onClose, onSaved }: { onClose: () => void; onSaved:
   useEscapeKey(onClose);
 
   const [form, setForm] = useState({
-    code: "", name: "", sector: SECTORS[0], priceList: "reventa" as "reventa" | "general",
+    code: "", name: "", sector: SECTORS[0], priceList: "reventa" as "reventa" | "general" | "licitacion",
     phone: "", email: "", address: "", notes: "",
     assignedToId: user?.id || "",
   });
@@ -75,7 +75,7 @@ function ModalNuevoCliente({ onClose, onSaved }: { onClose: () => void; onSaved:
           <div>
             <label style={lbl}>Lista de precios</label>
             <div style={{ display: "flex", gap: 8 }}>
-              {([["reventa", "Reventa"], ["general", "General"]] as const).map(([val, label]) => (
+              {([["reventa", "Reventa"], ["general", "General"], ["licitacion", "Licitación"]] as const).map(([val, label]) => (
                 <button key={val} type="button" onClick={() => setForm({ ...form, priceList: val })} style={{
                   flex: 1, padding: "9px 12px", borderRadius: R, cursor: "pointer", fontSize: 13, fontWeight: 700,
                   background: form.priceList === val ? C.accentDim : C.card,
