@@ -5,13 +5,14 @@ export async function getProducts() {
   return data;
 }
 
-export async function importProducts(file: File) {
+export async function importProducts(file: File, listType: "reventa" | "general" = "reventa") {
   const formData = new FormData();
   formData.append("file", file);
+  formData.append("listType", listType);
   const { data } = await api.post("/products/import", formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
-  return data as { imported: number; updated: number; skipped: number; errors: string[] };
+  return data as { imported: number; updated: number; skipped: number; errors: string[]; listType: string };
 }
 
 export async function getProductStats() {

@@ -79,12 +79,18 @@ export async function importFromExcel(req: Request, res: Response, next: NextFun
     const findCol = (...names: string[]) =>
       header.findIndex((h) => names.some((n) => h === n || h.includes(n)));
 
+    // Which list is being uploaded? ("reventa" default | "general")
+    const listType = (String(req.body?.listType ?? "reventa").toLowerCase() === "general") ? "general" : "reventa";
+
     const colCodigo  = findCol("CODIGO");
     const colDetalle = findCol("DETALLE");
     const colMarca   = findCol("MARCA");
     const colUnid    = header.findIndex((h) => h === "UNID");
     const colUniMed  = findCol("UNI_MED", "UNI MED", "UNIDAD MEDIDA", "U_MEDIDA");
-    const colPrecio  = findCol("REVENTA SIN IVA", "REVENTA");
+    // Prefer the column matching the selected list; fall back to any price column.
+    const colPrecio  = listType === "general"
+      ? findCol("GENERAL CON IVA", "GENERAL SIN IVA", "GENERAL", "PRECIO")
+      : findCol("REVENTA SIN IVA", "REVENTA", "PRECIO");
 
     const rows: ImportRow[] = [];
     let skippedEmpty = 0;
@@ -112,8 +118,8 @@ export async function importFromExcel(req: Request, res: Response, next: NextFun
       rows.push({ code, name, description: brand, unit, price });
     }
 
-    const result = await importProducts(rows);
-    res.json({ ...result, skipped: result.skipped + skippedEmpty });
+    const result = await importProducts(rows, listType);
+    res.json({ ...result, listType, skipped: result.skipped + skippedEmpty });
   } catch (err) {
     next(err);
   }

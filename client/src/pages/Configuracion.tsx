@@ -235,10 +235,11 @@ export default function Configuracion() {
   const [preview, setPreview] = useState<PreviewRow[]>([]);
   const [result, setResult] = useState<{ imported: number; updated: number; skipped: number; errors: string[] } | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
+  const [listType, setListType] = useState<"reventa" | "general">("reventa");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const importMutation = useMutation({
-    mutationFn: (f: File) => importProducts(f),
+    mutationFn: (f: File) => importProducts(f, listType),
     onSuccess: (data) => {
       setResult(data);
       setImportError(null);
@@ -340,9 +341,24 @@ export default function Configuracion() {
         <h2 style={{ color: C.text, fontSize: 14, fontWeight: 800, textTransform: "uppercase", letterSpacing: 0.8, margin: "0 0 4px" }}>
           Importar Lista de Precios
         </h2>
-        <p style={{ color: C.muted, fontSize: 12, margin: "0 0 20px" }}>
-          Subí un archivo Excel (.xlsx) con las columnas: CODIGO_PRO, DETALLE, MARCA, UNID, UNI_MED, REVENTA SIN IVA
+        <p style={{ color: C.muted, fontSize: 12, margin: "0 0 16px" }}>
+          Subí un archivo Excel (.xlsx) con columnas: CODIGO, DETALLE, MARCA, UNID, UNI_MED y la columna de precio.
         </p>
+
+        {/* List type selector */}
+        <div style={{ marginBottom: 18 }}>
+          <div style={{ color: C.muted, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.7, marginBottom: 6 }}>¿Qué lista estás subiendo?</div>
+          <div style={{ display: "flex", gap: 8, maxWidth: 360 }}>
+            {([["reventa", "Lista Reventa"], ["general", "Lista General"]] as const).map(([val, label]) => (
+              <button key={val} type="button" onClick={() => setListType(val)} style={{
+                flex: 1, padding: "10px 12px", borderRadius: 8, cursor: "pointer", fontSize: 13, fontWeight: 700,
+                background: listType === val ? C.accentDim : C.surface,
+                color: listType === val ? C.accent : C.muted,
+                border: `1px solid ${listType === val ? C.accent : C.border}`,
+              }}>{label}</button>
+            ))}
+          </div>
+        </div>
 
         {/* Stats row */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 20 }}>

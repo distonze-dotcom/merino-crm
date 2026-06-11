@@ -39,6 +39,7 @@ export async function createCustomer(
     code?: string;
     name: string;
     sector: string;
+    priceList?: string;
     phone?: string;
     email?: string;
     address?: string;
@@ -63,7 +64,7 @@ export async function createCustomer(
 
 export async function updateCustomer(
   id: string,
-  data: Partial<{ code: string; name: string; sector: string; phone: string; email: string; address: string; notes: string; active: boolean }>,
+  data: Partial<{ code: string; name: string; sector: string; priceList: string; phone: string; email: string; address: string; notes: string; active: boolean }>,
   actorId: string
 ) {
   const old = await prisma.customer.findUnique({ where: { id } });

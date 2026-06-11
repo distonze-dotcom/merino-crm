@@ -42,8 +42,11 @@ export interface ImportResult {
 
 const CHUNK = 500;
 
-export async function importProducts(rows: ImportRow[]): Promise<ImportResult> {
+export type ListType = "reventa" | "general";
+
+export async function importProducts(rows: ImportRow[], listType: ListType = "reventa"): Promise<ImportResult> {
   const errors: string[] = [];
+  const isGeneral = listType === "general";
 
   // De-duplicate by code within the file (last occurrence wins).
   const byCode = new Map<string, ImportRow>();
@@ -60,13 +63,17 @@ export async function importProducts(rows: ImportRow[]): Promise<ImportResult> {
   const toCreate = unique.filter((r) => !existingSet.has(r.code));
   const toUpdate = unique.filter((r) => existingSet.has(r.code));
 
-  // Bulk INSERT new products (chunked createMany).
+  // Bulk INSERT new products. For a new product we always set `price` (reventa,
+  // non-null); if importing the general list, also set priceGeneral and use it
+  // as the reventa fallback until the reventa list is uploaded.
   for (let i = 0; i < toCreate.length; i += CHUNK) {
     const chunk = toCreate.slice(i, i + CHUNK);
     try {
       await prisma.product.createMany({
         data: chunk.map((r) => ({
-          code: r.code, name: r.name, description: r.description, unit: r.unit, price: r.price,
+          code: r.code, name: r.name, description: r.description, unit: r.unit,
+          price: r.price,
+          priceGeneral: isGeneral ? r.price : undefined,
         })),
         skipDuplicates: true,
       });
@@ -75,19 +82,22 @@ export async function importProducts(rows: ImportRow[]): Promise<ImportResult> {
     }
   }
 
-  // Bulk UPDATE existing products with a single VALUES-join query per chunk.
+  // Bulk UPDATE existing products — only the column for the uploaded list.
   for (let i = 0; i < toUpdate.length; i += CHUNK) {
     const chunk = toUpdate.slice(i, i + CHUNK);
     const values = chunk.map(
       (r) => Prisma.sql`(${r.code}, ${r.name}, ${r.description}, ${r.unit}, ${r.price})`
     );
+    const priceAssign = isGeneral
+      ? Prisma.sql`"priceGeneral" = v.price::double precision`
+      : Prisma.sql`price = v.price::double precision`;
     try {
       await prisma.$executeRaw`
         UPDATE "Product" AS p
         SET name = v.name,
             description = v.description,
             unit = v.unit,
-            price = v.price::double precision,
+            ${priceAssign},
             active = true,
             "updatedAt" = NOW()
         FROM (VALUES ${Prisma.join(values)}) AS v(code, name, description, unit, price)

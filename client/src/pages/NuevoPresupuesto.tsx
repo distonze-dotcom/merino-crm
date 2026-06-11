@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCustomers } from "../hooks/useCustomers";
 import { useProducts } from "../hooks/useProducts";
@@ -31,12 +31,26 @@ export default function NuevoPresupuesto() {
       .slice(0, 25);
   }, [search, products, lines]);
 
+  const selectedCustomer = (customers as any[]).find((c) => c.id === customerId);
+  const priceList: "reventa" | "general" = selectedCustomer?.priceList === "general" ? "general" : "reventa";
+  // Price for a product according to the selected customer's list
+  const priceFor = (p: any) => (priceList === "general" ? (p.priceGeneral ?? p.price) : p.price);
+
   const addProduct = (p: any) => {
-    setLines([...lines, { productId: p.id, code: p.code, name: p.name, unit: p.unit, quantity: 1, unitPrice: p.price }]);
+    setLines([...lines, { productId: p.id, code: p.code, name: p.name, unit: p.unit, quantity: 1, unitPrice: priceFor(p) }]);
     setSearch("");
   };
   const updateLine = (i: number, patch: Partial<Line>) => setLines(lines.map((l, idx) => (idx === i ? { ...l, ...patch } : l)));
   const removeLine = (i: number) => setLines(lines.filter((_, idx) => idx !== i));
+
+  // Re-price all lines when the selected customer's price list changes
+  useEffect(() => {
+    setLines((prev) => prev.map((l) => {
+      const p = (products as any[]).find((x) => x.id === l.productId);
+      return p ? { ...l, unitPrice: priceList === "general" ? (p.priceGeneral ?? p.price) : p.price } : l;
+    }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [priceList]);
 
   const total = lines.reduce((s, l) => s + l.quantity * l.unitPrice, 0);
 

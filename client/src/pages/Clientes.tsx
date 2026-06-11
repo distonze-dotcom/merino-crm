@@ -21,7 +21,8 @@ function ModalNuevoCliente({ onClose, onSaved }: { onClose: () => void; onSaved:
   useEscapeKey(onClose);
 
   const [form, setForm] = useState({
-    code: "", name: "", sector: SECTORS[0], phone: "", email: "", address: "", notes: "",
+    code: "", name: "", sector: SECTORS[0], priceList: "reventa" as "reventa" | "general",
+    phone: "", email: "", address: "", notes: "",
     assignedToId: user?.id || "",
   });
   const [error, setError] = useState("");
@@ -34,7 +35,7 @@ function ModalNuevoCliente({ onClose, onSaved }: { onClose: () => void; onSaved:
     try {
       await createMutation.mutateAsync({
         code: form.code.trim() || undefined,
-        name: form.name.trim(), sector: form.sector,
+        name: form.name.trim(), sector: form.sector, priceList: form.priceList,
         phone: form.phone || undefined, email: form.email || undefined,
         address: form.address || undefined, notes: form.notes || undefined,
         assignedToId: form.assignedToId,
@@ -69,6 +70,19 @@ function ModalNuevoCliente({ onClose, onSaved }: { onClose: () => void; onSaved:
                 <option value="">Seleccionar...</option>
                 {(users as any[]).filter((u) => u.role === "SALES").map((u) => <option key={u.id} value={u.id}>{u.name}</option>)}
               </select>
+            </div>
+          </div>
+          <div>
+            <label style={lbl}>Lista de precios</label>
+            <div style={{ display: "flex", gap: 8 }}>
+              {([["reventa", "Reventa"], ["general", "General"]] as const).map(([val, label]) => (
+                <button key={val} type="button" onClick={() => setForm({ ...form, priceList: val })} style={{
+                  flex: 1, padding: "9px 12px", borderRadius: R, cursor: "pointer", fontSize: 13, fontWeight: 700,
+                  background: form.priceList === val ? C.accentDim : C.card,
+                  color: form.priceList === val ? C.accent : C.muted,
+                  border: `1px solid ${form.priceList === val ? C.accent : C.border}`,
+                }}>{label}</button>
+              ))}
             </div>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>

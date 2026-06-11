@@ -33,6 +33,7 @@ model Customer {
   code         String?  @unique
   name         String
   sector       String
+  priceList    String   @default("reventa")  // "reventa" | "general"
   phone        String?
   email        String?
   address      String?
@@ -66,13 +67,14 @@ model Visit {
 }
 
 model Product {
-  id          String   @id @default(cuid())
-  code        String   @unique
-  name        String
-  description String?
-  unit        String   @default("un")
-  price       Float
-  active      Boolean  @default(true)
+  id           String   @id @default(cuid())
+  code         String   @unique
+  name         String
+  description  String?
+  unit         String   @default("un")
+  price        Float    // precio de reventa (lista por defecto)
+  priceGeneral Float?   // precio de lista general
+  active       Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
